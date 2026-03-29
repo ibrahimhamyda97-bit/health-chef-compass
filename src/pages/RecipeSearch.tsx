@@ -4,19 +4,35 @@ import { recipes, Recipe } from "@/data/recipes";
 import { NutritionCircle } from "@/components/NutritionCircle";
 import { RecipeCard } from "@/components/RecipeCard";
 import { Input } from "@/components/ui/input";
+import { useNutrition } from "@/context/NutritionContext";
 import { Search, Minus, Plus, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
+
+function countMatchingTags(recipe: Recipe, items: string[]): number {
+  if (items.length === 0) return 0;
+  return recipe.tags.filter((tag) =>
+    items.some((item) => tag.includes(item) || item.includes(tag))
+  ).length;
+}
 
 export default function RecipeSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedId = searchParams.get("id");
   const [query, setQuery] = useState("");
   const [servings, setServings] = useState(1);
+  const { fridgeItems } = useNutrition();
 
-  const filtered = useMemo(
-    () => query.trim() ? recipes.filter((r) => r.name.toLowerCase().includes(query.toLowerCase())) : recipes,
-    [query]
-  );
+  const filtered = useMemo(() => {
+    let list = query.trim()
+      ? recipes.filter((r) => r.name.toLowerCase().includes(query.toLowerCase()))
+      : recipes;
+
+    if (fridgeItems.length > 0 && !query.trim()) {
+      list = [...list].sort((a, b) => countMatchingTags(b, fridgeItems) - countMatchingTags(a, fridgeItems));
+    }
+
+    return list;
+  }, [query, fridgeItems]);
 
   const selected = selectedId ? recipes.find((r) => r.id === selectedId) : null;
 
@@ -91,11 +107,17 @@ export default function RecipeSearch() {
     );
   }
 
+  const hasIngredients = fridgeItems.length > 0;
+
   return (
     <div className="space-y-6 max-w-4xl">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-display font-bold">Recherche Recette 🔍</h1>
-        <p className="text-muted-foreground text-sm">Trouvez et explorez des recettes détaillées.</p>
+        <p className="text-muted-foreground text-sm">
+          {hasIngredients && !query.trim()
+            ? `Triées par correspondance avec vos ${fridgeItems.length} ingrédient(s) du frigo.`
+            : "Trouvez et explorez des recettes détaillées."}
+        </p>
       </motion.div>
 
       <div className="relative max-w-md">
@@ -109,9 +131,19 @@ export default function RecipeSearch() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((r) => (
-          <RecipeCard key={r.id} recipe={r} />
-        ))}
+        {filtered.map((r) => {
+          const matchCount = countMatchingTags(r, fridgeItems);
+          return (
+            <div key={r.id} className="relative">
+              {hasIngredients && matchCount > 0 && !query.trim() && (
+                <span className="absolute -top-2 -right-2 z-10 text-[10px] font-bold bg-emerald-soft text-emerald px-2 py-0.5 rounded-full">
+                  {matchCount} match{matchCount > 1 ? "s" : ""}
+                </span>
+              )}
+              <RecipeCard recipe={r} highlight={hasIngredients && matchCount > 0 && !query.trim()} />
+            </div>
+          );
+        })}
       </div>
 
       {filtered.length === 0 && (
