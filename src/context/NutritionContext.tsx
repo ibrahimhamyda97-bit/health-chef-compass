@@ -15,7 +15,7 @@ interface NutritionContextType {
   isInCart: (id: string) => boolean;
 }
 
-const NutritionContext = createContext<NutritionContextType | null>(null);
+const NutritionContext = createContext<NutritionContextType | undefined>(undefined);
 
 export function NutritionProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<Mode>("perte");
@@ -56,6 +56,6 @@ export function NutritionProvider({ children }: { children: ReactNode }) {
 
 export function useNutrition() {
   const ctx = useContext(NutritionContext);
-  if (!ctx) throw new Error("useNutrition must be used within NutritionProvider");
+  if (ctx === undefined) throw new Error("useNutrition must be used within NutritionProvider");
   return ctx;
 }
