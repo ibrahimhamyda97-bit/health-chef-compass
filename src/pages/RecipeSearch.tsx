@@ -22,17 +22,37 @@ export default function RecipeSearch() {
   const [servings, setServings] = useState(1);
   const { fridgeItems } = useNutrition();
 
+  const allRecipes = useMemo(() => {
+    const saved = localStorage.getItem("nutridash-custom-recipes");
+    if (saved) {
+      try { return [...recipes, ...JSON.parse(saved)]; } catch { /* ignore */ }
+    }
+    return recipes;
+  }, []);
+
   const filtered = useMemo(() => {
     let list = query.trim()
-      ? recipes.filter((r) => r.name.toLowerCase().includes(query.toLowerCase()))
-      : recipes;
+      ? allRecipes.filter((r) =>
+          r.name.toLowerCase().includes(query.toLowerCase()) ||
+          r.tags.some((t) => t.includes(query.toLowerCase())) ||
+          r.ingredients.some((ing) => ing.name.toLowerCase().includes(query.toLowerCase()))
+        )
+      : allRecipes;
 
     if (fridgeItems.length > 0 && !query.trim()) {
       list = [...list].sort((a, b) => countMatchingTags(b, fridgeItems) - countMatchingTags(a, fridgeItems));
     }
 
     return list;
-  }, [query, fridgeItems]);
+  }, [query, fridgeItems, allRecipes]);
+
+  const suggestions = useMemo(() => {
+    if (query.length < 2) return [];
+    const q = query.toLowerCase();
+    return allRecipes
+      .filter((r) => r.name.toLowerCase().includes(q))
+      .slice(0, 5);
+  }, [query, allRecipes]);
 
   const selected = selectedId ? recipes.find((r) => r.id === selectedId) : null;
 
@@ -120,15 +140,30 @@ export default function RecipeSearch() {
         </p>
       </motion.div>
 
-      <div className="flex gap-2 max-w-md">
+      <div className="flex gap-2 max-w-md relative">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Rechercher un plat..."
+            placeholder="Rechercher un plat, ingrédient..."
             className="pl-9 rounded-xl bg-secondary border-0 focus-visible:ring-1 focus-visible:ring-primary"
           />
+          {suggestions.length > 0 && query.length >= 2 && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-card rounded-xl shadow-lg border border-border z-20 overflow-hidden">
+              {suggestions.map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => { setQuery(""); setSearchParams({ id: r.id }); }}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-secondary transition-colors flex items-center gap-2"
+                >
+                  <span>{r.image}</span>
+                  <span>{r.name}</span>
+                  <span className="ml-auto text-xs text-muted-foreground">{r.calories} kcal</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <button
           onClick={() => setQuery(query)}
