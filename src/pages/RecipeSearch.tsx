@@ -107,11 +107,17 @@ export default function RecipeSearch() {
     );
   }
 
+  const hasIngredients = fridgeItems.length > 0;
+
   return (
     <div className="space-y-6 max-w-4xl">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-display font-bold">Recherche Recette 🔍</h1>
-        <p className="text-muted-foreground text-sm">Trouvez et explorez des recettes détaillées.</p>
+        <p className="text-muted-foreground text-sm">
+          {hasIngredients && !query.trim()
+            ? `Triées par correspondance avec vos ${fridgeItems.length} ingrédient(s) du frigo.`
+            : "Trouvez et explorez des recettes détaillées."}
+        </p>
       </motion.div>
 
       <div className="relative max-w-md">
