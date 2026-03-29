@@ -58,7 +58,7 @@ export function NutritionProvider({ children }: { children: ReactNode }) {
 
   return (
     <NutritionContext.Provider
-      value={{ mode, setMode, favorites, toggleFavorite, fridgeItems, addFridgeItem, removeFridgeItem, cart, toggleCart, isInCart }}
+      value={{ mode, setMode, favorites, toggleFavorite, fridgeItems, addFridgeItem, removeFridgeItem, cart, toggleCart, isInCart, shoppingItems, addShoppingItems }}
     >
       {children}
     </NutritionContext.Provider>
