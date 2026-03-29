@@ -22,17 +22,37 @@ export default function RecipeSearch() {
   const [servings, setServings] = useState(1);
   const { fridgeItems } = useNutrition();
 
+  const allRecipes = useMemo(() => {
+    const saved = localStorage.getItem("nutridash-custom-recipes");
+    if (saved) {
+      try { return [...recipes, ...JSON.parse(saved)]; } catch { /* ignore */ }
+    }
+    return recipes;
+  }, []);
+
   const filtered = useMemo(() => {
     let list = query.trim()
-      ? recipes.filter((r) => r.name.toLowerCase().includes(query.toLowerCase()))
-      : recipes;
+      ? allRecipes.filter((r) =>
+          r.name.toLowerCase().includes(query.toLowerCase()) ||
+          r.tags.some((t) => t.includes(query.toLowerCase())) ||
+          r.ingredients.some((ing) => ing.name.toLowerCase().includes(query.toLowerCase()))
+        )
+      : allRecipes;
 
     if (fridgeItems.length > 0 && !query.trim()) {
       list = [...list].sort((a, b) => countMatchingTags(b, fridgeItems) - countMatchingTags(a, fridgeItems));
     }
 
     return list;
-  }, [query, fridgeItems]);
+  }, [query, fridgeItems, allRecipes]);
+
+  const suggestions = useMemo(() => {
+    if (query.length < 2) return [];
+    const q = query.toLowerCase();
+    return allRecipes
+      .filter((r) => r.name.toLowerCase().includes(q))
+      .slice(0, 5);
+  }, [query, allRecipes]);
 
   const selected = selectedId ? recipes.find((r) => r.id === selectedId) : null;
 
