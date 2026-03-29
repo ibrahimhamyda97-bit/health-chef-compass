@@ -56,6 +56,6 @@ export function NutritionProvider({ children }: { children: ReactNode }) {
 
 export function useNutrition() {
   const ctx = useContext(NutritionContext);
-  if (!ctx) throw new Error("useNutrition must be used within NutritionProvider");
+  if (ctx === undefined) throw new Error("useNutrition must be used within NutritionProvider");
   return ctx;
 }
