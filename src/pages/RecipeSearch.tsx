@@ -3,10 +3,14 @@ import { useSearchParams } from "react-router-dom";
 import { recipes, Recipe } from "@/data/recipes";
 import { NutritionCircle } from "@/components/NutritionCircle";
 import { RecipeCard } from "@/components/RecipeCard";
+import { AIRecipeDetail, AIRecipe } from "@/components/AIRecipeDetail";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useNutrition } from "@/context/NutritionContext";
-import { Search, Minus, Plus, ArrowLeft } from "lucide-react";
+import { Search, Minus, Plus, ArrowLeft, Sparkles, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 function countMatchingTags(recipe: Recipe, items: string[]): number {
   if (items.length === 0) return 0;
@@ -21,6 +25,10 @@ export default function RecipeSearch() {
   const [query, setQuery] = useState("");
   const [servings, setServings] = useState(1);
   const { fridgeItems } = useNutrition();
+
+  // AI search state
+  const [aiRecipe, setAiRecipe] = useState<AIRecipe | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
 
   const allRecipes = useMemo(() => {
     const saved = localStorage.getItem("nutridash-custom-recipes");
@@ -48,14 +56,45 @@ export default function RecipeSearch() {
 
   const suggestions = useMemo(() => {
     if (query.length < 2) return [];
-    const q = query.toLowerCase();
     return allRecipes
-      .filter((r) => r.name.toLowerCase().includes(q))
+      .filter((r) => r.name.toLowerCase().includes(query.toLowerCase()))
       .slice(0, 5);
   }, [query, allRecipes]);
 
-  const selected = selectedId ? recipes.find((r) => r.id === selectedId) : null;
+  const handleAISearch = async () => {
+    const q = query.trim();
+    if (!q || q.length < 2) {
+      toast.error("Entrez au moins 2 caractères pour la recherche IA.");
+      return;
+    }
+    setAiLoading(true);
+    setAiRecipe(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-recipe", {
+        body: { dishName: q, servings: 4 },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setAiRecipe(data.recipe);
+    } catch (e: any) {
+      console.error("AI search error:", e);
+      toast.error(e.message || "Erreur lors de la génération de la recette.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleAISearch();
+  };
+
+  // Show AI recipe detail
+  if (aiRecipe) {
+    return <AIRecipeDetail recipe={aiRecipe} onBack={() => setAiRecipe(null)} />;
+  }
+
+  // Show local recipe detail
+  const selected = selectedId ? allRecipes.find((r) => r.id === selectedId) : null;
   if (selected) {
     const ratio = servings / selected.servings;
     return (
@@ -64,7 +103,6 @@ export default function RecipeSearch() {
           <button onClick={() => setSearchParams({})} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
             <ArrowLeft className="w-4 h-4" /> Retour
           </button>
-
           <div className="flex items-center gap-3 mb-6">
             <span className="text-4xl">{selected.image}</span>
             <div>
@@ -73,20 +111,14 @@ export default function RecipeSearch() {
             </div>
           </div>
         </motion.div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Ingredients */}
           <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="glass-card-solid rounded-2xl p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display font-semibold">Ingrédients</h2>
               <div className="flex items-center gap-2">
-                <button onClick={() => setServings(Math.max(1, servings - 1))} className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-muted transition-colors">
-                  <Minus className="w-3 h-3" />
-                </button>
+                <button onClick={() => setServings(Math.max(1, servings - 1))} className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-muted transition-colors"><Minus className="w-3 h-3" /></button>
                 <span className="text-sm font-medium w-16 text-center">{servings} portion{servings > 1 ? "s" : ""}</span>
-                <button onClick={() => setServings(servings + 1)} className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-muted transition-colors">
-                  <Plus className="w-3 h-3" />
-                </button>
+                <button onClick={() => setServings(servings + 1)} className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-muted transition-colors"><Plus className="w-3 h-3" /></button>
               </div>
             </div>
             <ul className="space-y-2">
@@ -98,8 +130,6 @@ export default function RecipeSearch() {
               ))}
             </ul>
           </motion.div>
-
-          {/* Steps */}
           <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }} className="glass-card-solid rounded-2xl p-5">
             <h2 className="font-display font-semibold mb-4">Préparation</h2>
             <ol className="space-y-4">
@@ -112,8 +142,6 @@ export default function RecipeSearch() {
             </ol>
           </motion.div>
         </div>
-
-        {/* Nutrition footer */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="glass-card-solid rounded-2xl p-6">
           <h2 className="font-display font-semibold mb-4 text-center">Valeurs Nutritionnelles ({servings} portion{servings > 1 ? "s" : ""})</h2>
           <div className="flex flex-wrap justify-center gap-8">
@@ -136,20 +164,22 @@ export default function RecipeSearch() {
         <p className="text-muted-foreground text-sm">
           {hasIngredients && !query.trim()
             ? `Triées par correspondance avec vos ${fridgeItems.length} ingrédient(s) du frigo.`
-            : "Trouvez et explorez des recettes détaillées."}
+            : "Tapez n'importe quel plat du monde et l'IA génère la recette complète."}
         </p>
       </motion.div>
 
-      <div className="flex gap-2 max-w-md relative">
+      {/* Search bar */}
+      <div className="flex gap-2 max-w-lg relative">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Rechercher un plat, ingrédient..."
+            onKeyDown={handleKeyDown}
+            placeholder="Mafé de poulet, Sushi maison, Ratatouille..."
             className="pl-9 rounded-xl bg-secondary border-0 focus-visible:ring-1 focus-visible:ring-primary"
           />
-          {suggestions.length > 0 && query.length >= 2 && (
+          {suggestions.length > 0 && query.length >= 2 && !aiLoading && (
             <div className="absolute top-full left-0 right-0 mt-1 bg-card rounded-xl shadow-lg border border-border z-20 overflow-hidden">
               {suggestions.map((r) => (
                 <button
@@ -165,35 +195,53 @@ export default function RecipeSearch() {
             </div>
           )}
         </div>
-        <button
-          onClick={() => setQuery(query)}
-          className="shrink-0 px-4 rounded-xl gradient-cobalt text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity flex items-center gap-1.5"
+        <Button
+          onClick={handleAISearch}
+          disabled={aiLoading}
+          className="shrink-0 rounded-xl gradient-cobalt text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity gap-1.5"
         >
-          <Search className="w-4 h-4" />
-          Rechercher
-        </button>
+          {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+          {aiLoading ? "Génération..." : "Recherche IA"}
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((r) => {
-          const matchCount = countMatchingTags(r, fridgeItems);
-          return (
-            <div key={r.id} className="relative">
-              {hasIngredients && matchCount > 0 && !query.trim() && (
-                <span className="absolute -top-2 -right-2 z-10 text-[10px] font-bold bg-emerald-soft text-emerald px-2 py-0.5 rounded-full">
-                  {matchCount} match{matchCount > 1 ? "s" : ""}
-                </span>
-              )}
-              <RecipeCard recipe={r} highlight={hasIngredients && matchCount > 0 && !query.trim()} />
-            </div>
-          );
-        })}
-      </div>
+      {/* AI loading indicator */}
+      {aiLoading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="glass-card-solid rounded-2xl p-8 text-center"
+        >
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3 text-primary" />
+          <p className="font-display font-semibold">L'IA prépare votre recette...</p>
+          <p className="text-sm text-muted-foreground mt-1">Génération de « {query} » en cours</p>
+        </motion.div>
+      )}
 
-      {filtered.length === 0 && (
+      {/* Recipe grid */}
+      {!aiLoading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((r) => {
+            const matchCount = countMatchingTags(r, fridgeItems);
+            return (
+              <div key={r.id} className="relative">
+                {hasIngredients && matchCount > 0 && !query.trim() && (
+                  <span className="absolute -top-2 -right-2 z-10 text-[10px] font-bold bg-emerald-soft text-emerald px-2 py-0.5 rounded-full">
+                    {matchCount} match{matchCount > 1 ? "es" : ""}
+                  </span>
+                )}
+                <RecipeCard recipe={r} highlight={hasIngredients && matchCount > 0 && !query.trim()} />
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {!aiLoading && filtered.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
           <p className="text-4xl mb-2">🔍</p>
-          <p>Aucune recette trouvée pour "{query}"</p>
+          <p>Aucune recette locale trouvée pour « {query} »</p>
+          <p className="text-sm mt-2">Cliquez sur <strong>Recherche IA</strong> pour générer cette recette !</p>
         </div>
       )}
     </div>

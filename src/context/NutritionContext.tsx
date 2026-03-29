@@ -13,6 +13,8 @@ interface NutritionContextType {
   cart: string[];
   toggleCart: (id: string) => void;
   isInCart: (id: string) => boolean;
+  shoppingItems: { name: string; quantity: string }[];
+  addShoppingItems: (items: { name: string; quantity: string }[]) => void;
 }
 
 const NutritionContext = createContext<NutritionContextType | undefined>(undefined);
@@ -22,6 +24,15 @@ export function NutritionProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [fridgeItems, setFridgeItems] = useState<string[]>([]);
   const [cart, setCart] = useState<string[]>([]);
+  const [shoppingItems, setShoppingItems] = useState<{ name: string; quantity: string }[]>([]);
+
+  const addShoppingItems = (items: { name: string; quantity: string }[]) => {
+    setShoppingItems((prev) => {
+      const existing = new Set(prev.map((i) => i.name.toLowerCase()));
+      const newItems = items.filter((i) => !existing.has(i.name.toLowerCase()));
+      return [...prev, ...newItems];
+    });
+  };
 
   const toggleFavorite = (id: string) =>
     setFavorites((prev) =>
@@ -47,7 +58,7 @@ export function NutritionProvider({ children }: { children: ReactNode }) {
 
   return (
     <NutritionContext.Provider
-      value={{ mode, setMode, favorites, toggleFavorite, fridgeItems, addFridgeItem, removeFridgeItem, cart, toggleCart, isInCart }}
+      value={{ mode, setMode, favorites, toggleFavorite, fridgeItems, addFridgeItem, removeFridgeItem, cart, toggleCart, isInCart, shoppingItems, addShoppingItems }}
     >
       {children}
     </NutritionContext.Provider>

@@ -61,7 +61,7 @@ interface ShoppingItem {
 }
 
 export default function ShoppingList() {
-  const { cart } = useNutrition();
+  const { cart, shoppingItems } = useNutrition();
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
   const [manualItems, setManualItems] = useState<ShoppingItem[]>([]);
   const [input, setInput] = useState("");
@@ -82,13 +82,24 @@ export default function ShoppingList() {
       }
     }
 
+    // Also add AI-generated shopping items
+    for (const item of shoppingItems) {
+      const key = item.name.toLowerCase();
+      if (map.has(key)) {
+        const existing = map.get(key)!;
+        existing.quantity = mergeQuantities(existing.quantity, item.quantity);
+      } else {
+        map.set(key, { quantity: item.quantity, category: getCategory(item.name) });
+      }
+    }
+
     const items: ShoppingItem[] = [];
     map.forEach((val, key) => {
       items.push({ name: key.charAt(0).toUpperCase() + key.slice(1), quantity: val.quantity, category: val.category, checked: false });
     });
 
     return items;
-  }, [cart]);
+  }, [cart, shoppingItems]);
 
   const allItems = [...mergedItems, ...manualItems];
 
