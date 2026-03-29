@@ -1,0 +1,125 @@
+import { useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+import { recipes, Recipe } from "@/data/recipes";
+import { NutritionCircle } from "@/components/NutritionCircle";
+import { RecipeCard } from "@/components/RecipeCard";
+import { Input } from "@/components/ui/input";
+import { Search, Minus, Plus, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
+
+export default function RecipeSearch() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedId = searchParams.get("id");
+  const [query, setQuery] = useState("");
+  const [servings, setServings] = useState(1);
+
+  const filtered = useMemo(
+    () => query.trim() ? recipes.filter((r) => r.name.toLowerCase().includes(query.toLowerCase())) : recipes,
+    [query]
+  );
+
+  const selected = selectedId ? recipes.find((r) => r.id === selectedId) : null;
+
+  if (selected) {
+    const ratio = servings / selected.servings;
+    return (
+      <div className="space-y-6 max-w-4xl">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+          <button onClick={() => setSearchParams({})} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
+            <ArrowLeft className="w-4 h-4" /> Retour
+          </button>
+
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-4xl">{selected.image}</span>
+            <div>
+              <h1 className="text-2xl font-display font-bold">{selected.name}</h1>
+              <p className="text-sm text-muted-foreground">{selected.prepTime} · {Math.round(selected.calories * ratio)} kcal</p>
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Ingredients */}
+          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="glass-card-solid rounded-2xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display font-semibold">Ingrédients</h2>
+              <div className="flex items-center gap-2">
+                <button onClick={() => setServings(Math.max(1, servings - 1))} className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-muted transition-colors">
+                  <Minus className="w-3 h-3" />
+                </button>
+                <span className="text-sm font-medium w-16 text-center">{servings} portion{servings > 1 ? "s" : ""}</span>
+                <button onClick={() => setServings(servings + 1)} className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-muted transition-colors">
+                  <Plus className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+            <ul className="space-y-2">
+              {selected.ingredients.map((ing, i) => (
+                <li key={i} className="flex justify-between text-sm py-2 border-b border-border last:border-0">
+                  <span>{ing.name}</span>
+                  <span className="text-muted-foreground font-medium">{ing.quantity}</span>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Steps */}
+          <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }} className="glass-card-solid rounded-2xl p-5">
+            <h2 className="font-display font-semibold mb-4">Préparation</h2>
+            <ol className="space-y-4">
+              {selected.steps.map((step, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className="shrink-0 w-6 h-6 rounded-full gradient-cobalt text-primary-foreground text-xs flex items-center justify-center font-bold">{i + 1}</span>
+                  <p className="text-sm leading-relaxed">{step}</p>
+                </li>
+              ))}
+            </ol>
+          </motion.div>
+        </div>
+
+        {/* Nutrition footer */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="glass-card-solid rounded-2xl p-6">
+          <h2 className="font-display font-semibold mb-4 text-center">Valeurs Nutritionnelles ({servings} portion{servings > 1 ? "s" : ""})</h2>
+          <div className="flex flex-wrap justify-center gap-8">
+            <NutritionCircle label="Calories" value={Math.round(selected.calories * ratio)} max={2000} unit="kcal" color="hsl(25, 95%, 53%)" />
+            <NutritionCircle label="Protéines" value={Math.round(selected.protein * ratio)} max={60} unit="g" color="hsl(220, 70%, 50%)" />
+            <NutritionCircle label="Glucides" value={Math.round(selected.carbs * ratio)} max={100} unit="g" color="hsl(155, 60%, 45%)" />
+            <NutritionCircle label="Lipides" value={Math.round(selected.fat * ratio)} max={50} unit="g" color="hsl(280, 60%, 55%)" />
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 max-w-4xl">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+        <h1 className="text-2xl font-display font-bold">Recherche Recette 🔍</h1>
+        <p className="text-muted-foreground text-sm">Trouvez et explorez des recettes détaillées.</p>
+      </motion.div>
+
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Rechercher un plat..."
+          className="pl-9 rounded-xl bg-secondary border-0 focus-visible:ring-1 focus-visible:ring-primary"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filtered.map((r) => (
+          <RecipeCard key={r.id} recipe={r} />
+        ))}
+      </div>
+
+      {filtered.length === 0 && (
+        <div className="text-center py-12 text-muted-foreground">
+          <p className="text-4xl mb-2">🔍</p>
+          <p>Aucune recette trouvée pour "{query}"</p>
+        </div>
+      )}
+    </div>
+  );
+}
