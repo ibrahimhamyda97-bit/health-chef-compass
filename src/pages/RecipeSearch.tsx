@@ -4,19 +4,35 @@ import { recipes, Recipe } from "@/data/recipes";
 import { NutritionCircle } from "@/components/NutritionCircle";
 import { RecipeCard } from "@/components/RecipeCard";
 import { Input } from "@/components/ui/input";
+import { useNutrition } from "@/context/NutritionContext";
 import { Search, Minus, Plus, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
+
+function countMatchingTags(recipe: Recipe, items: string[]): number {
+  if (items.length === 0) return 0;
+  return recipe.tags.filter((tag) =>
+    items.some((item) => tag.includes(item) || item.includes(tag))
+  ).length;
+}
 
 export default function RecipeSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedId = searchParams.get("id");
   const [query, setQuery] = useState("");
   const [servings, setServings] = useState(1);
+  const { fridgeItems } = useNutrition();
 
-  const filtered = useMemo(
-    () => query.trim() ? recipes.filter((r) => r.name.toLowerCase().includes(query.toLowerCase())) : recipes,
-    [query]
-  );
+  const filtered = useMemo(() => {
+    let list = query.trim()
+      ? recipes.filter((r) => r.name.toLowerCase().includes(query.toLowerCase()))
+      : recipes;
+
+    if (fridgeItems.length > 0 && !query.trim()) {
+      list = [...list].sort((a, b) => countMatchingTags(b, fridgeItems) - countMatchingTags(a, fridgeItems));
+    }
+
+    return list;
+  }, [query, fridgeItems]);
 
   const selected = selectedId ? recipes.find((r) => r.id === selectedId) : null;
 
