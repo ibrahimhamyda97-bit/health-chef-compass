@@ -13,6 +13,8 @@ interface NutritionContextType {
   cart: string[];
   toggleCart: (id: string) => void;
   isInCart: (id: string) => boolean;
+  shoppingItems: { name: string; quantity: string }[];
+  addShoppingItems: (items: { name: string; quantity: string }[]) => void;
 }
 
 const NutritionContext = createContext<NutritionContextType | undefined>(undefined);
