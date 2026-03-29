@@ -10,6 +10,7 @@ import MyFridge from "@/pages/MyFridge";
 import RecipeSearch from "@/pages/RecipeSearch";
 import HealthGoals from "@/pages/HealthGoals";
 import Favorites from "@/pages/Favorites";
+import ShoppingList from "@/pages/ShoppingList";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
               <Route path="/" element={<Overview />} />
               <Route path="/frigo" element={<MyFridge />} />
               <Route path="/recettes" element={<RecipeSearch />} />
+              <Route path="/courses" element={<ShoppingList />} />
               <Route path="/objectifs" element={<HealthGoals />} />
               <Route path="/favoris" element={<Favorites />} />
             </Route>
