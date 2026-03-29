@@ -131,9 +131,19 @@ export default function RecipeSearch() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((r) => (
-          <RecipeCard key={r.id} recipe={r} />
-        ))}
+        {filtered.map((r) => {
+          const matchCount = countMatchingTags(r, fridgeItems);
+          return (
+            <div key={r.id} className="relative">
+              {hasIngredients && matchCount > 0 && !query.trim() && (
+                <span className="absolute -top-2 -right-2 z-10 text-[10px] font-bold bg-emerald-soft text-emerald px-2 py-0.5 rounded-full">
+                  {matchCount} match{matchCount > 1 ? "s" : ""}
+                </span>
+              )}
+              <RecipeCard recipe={r} highlight={hasIngredients && matchCount > 0 && !query.trim()} />
+            </div>
+          );
+        })}
       </div>
 
       {filtered.length === 0 && (
