@@ -3,7 +3,13 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
+import { NutritionProvider } from "@/context/NutritionContext";
+import { DashboardLayout } from "@/components/DashboardLayout";
+import Overview from "@/pages/Overview";
+import MyFridge from "@/pages/MyFridge";
+import RecipeSearch from "@/pages/RecipeSearch";
+import HealthGoals from "@/pages/HealthGoals";
+import Favorites from "@/pages/Favorites";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -11,15 +17,22 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <NutritionProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route element={<DashboardLayout />}>
+              <Route path="/" element={<Overview />} />
+              <Route path="/frigo" element={<MyFridge />} />
+              <Route path="/recettes" element={<RecipeSearch />} />
+              <Route path="/objectifs" element={<HealthGoals />} />
+              <Route path="/favoris" element={<Favorites />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </NutritionProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
