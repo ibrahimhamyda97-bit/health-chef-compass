@@ -38,6 +38,7 @@ const App = () => (
                 <Route path="/objectifs" element={<HealthGoals />} />
                 <Route path="/favoris" element={<Favorites />} />
                 <Route path="/planning" element={<Planning />} />
+                <Route path="/dressage" element={<PlatingArt />} />
                 <Route path="/admin" element={<Admin />} />
               </Route>
               <Route path="*" element={<NotFound />} />

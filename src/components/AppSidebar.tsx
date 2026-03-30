@@ -21,6 +21,7 @@ const items = [
   { title: "Liste de Courses", url: "/courses", icon: ShoppingCart },
   { title: "Objectif Santé", url: "/objectifs", icon: Target },
   { title: "Favoris", url: "/favoris", icon: Heart },
+  { title: "Art du Dressage", url: "/dressage", icon: Palette },
   { title: "Administration", url: "/admin", icon: ShieldCheck },
 ];
 
