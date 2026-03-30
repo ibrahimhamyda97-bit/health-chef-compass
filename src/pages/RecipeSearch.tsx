@@ -201,7 +201,7 @@ export default function RecipeSearch() {
           className="shrink-0 rounded-xl gradient-cobalt text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity gap-1.5"
         >
           {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-          {aiLoading ? "Génération..." : "Recherche IA"}
+          {aiLoading ? "Génération..." : "HaMenu"}
         </Button>
       </div>
 
