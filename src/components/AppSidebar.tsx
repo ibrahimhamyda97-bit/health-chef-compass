@@ -1,4 +1,4 @@
-import { LayoutDashboard, Refrigerator, ChefHat, Target, Heart, ShoppingCart, CalendarDays, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Refrigerator, ChefHat, Target, Heart, ShoppingCart, CalendarDays, ShieldCheck, Palette } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import {
