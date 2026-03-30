@@ -14,6 +14,7 @@ import Favorites from "@/pages/Favorites";
 import ShoppingList from "@/pages/ShoppingList";
 import Planning from "@/pages/Planning";
 import Admin from "@/pages/Admin";
+import PlatingArt from "@/pages/PlatingArt";
 import Auth from "@/pages/Auth";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -37,6 +38,7 @@ const App = () => (
                 <Route path="/objectifs" element={<HealthGoals />} />
                 <Route path="/favoris" element={<Favorites />} />
                 <Route path="/planning" element={<Planning />} />
+                <Route path="/dressage" element={<PlatingArt />} />
                 <Route path="/admin" element={<Admin />} />
               </Route>
               <Route path="*" element={<NotFound />} />
