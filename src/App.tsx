@@ -15,6 +15,7 @@ import ShoppingList from "@/pages/ShoppingList";
 import Planning from "@/pages/Planning";
 import Admin from "@/pages/Admin";
 import PlatingArt from "@/pages/PlatingArt";
+import PastryCourses from "@/pages/PastryCourses";
 import Auth from "@/pages/Auth";
 import NotFound from "./pages/NotFound.tsx";
 
