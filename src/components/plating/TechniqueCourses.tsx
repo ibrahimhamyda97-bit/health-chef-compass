@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GraduationCap, ChevronDown, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PhotoCapture from "./PhotoCapture";
 
 import techniqueVirgule from "@/assets/technique-virgule.jpg";
 import techniqueHauteur from "@/assets/technique-hauteur.jpg";
@@ -195,6 +196,8 @@ export default function TechniqueCourses() {
                 >
                   {isLearned ? "✓ Technique maîtrisée" : "J'ai appris cette technique"}
                 </Button>
+
+                <PhotoCapture courseTitle={course.title} courseImage={course.image} />
               </div>
             </motion.div>
           );
