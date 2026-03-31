@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
-import { Grip, Circle, Pipette, FlaskConical, Paintbrush, BookOpen } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Grip, Circle, Pipette, FlaskConical, Paintbrush, BookOpen, ChevronDown } from "lucide-react";
 
 interface Utensil {
   icon: typeof Grip;
@@ -42,53 +43,58 @@ const utensils: Utensil[] = [
 ];
 
 export default function UtensilsEncyclopedia() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
-      <div className="flex items-center gap-2 mb-5">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 mb-5 w-full group"
+      >
         <BookOpen className="w-5 h-5 text-[hsl(45,70%,55%)]" />
         <h2 className="font-display font-bold text-lg">Encyclopédie des Ustensiles</h2>
-      </div>
+        <ChevronDown className={`w-5 h-5 text-muted-foreground ml-auto transition-transform ${isOpen ? "rotate-180" : ""}`} />
+      </button>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {utensils.map((u, i) => (
+      <AnimatePresence>
+        {isOpen && (
           <motion.div
-            key={u.name}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.25 + i * 0.07 }}
-            className="rounded-2xl border border-[hsl(45,60%,40%,0.25)] bg-[hsl(0,0%,12%)] p-5 flex flex-col gap-3 hover:border-[hsl(45,60%,40%,0.5)] transition-colors group"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
           >
-            {/* Icon */}
-            <div className="w-11 h-11 rounded-xl bg-[hsl(45,70%,50%,0.12)] flex items-center justify-center group-hover:bg-[hsl(45,70%,50%,0.2)] transition-colors">
-              <u.icon className="w-5 h-5 text-[hsl(45,70%,55%)]" />
-            </div>
-
-            <h3 className="font-display font-semibold text-sm text-[hsl(45,60%,75%)]">
-              {u.name}
-            </h3>
-
-            {/* Purpose */}
-            <div>
-              <p className="text-[10px] uppercase tracking-wider text-[hsl(0,0%,45%)] mb-1">
-                À quoi ça sert ?
-              </p>
-              <p className="text-xs text-[hsl(0,0%,65%)] leading-relaxed">{u.purpose}</p>
-            </div>
-
-            {/* Tip */}
-            <div className="mt-auto pt-3 border-t border-[hsl(45,60%,40%,0.15)]">
-              <p className="text-[10px] uppercase tracking-wider text-[hsl(45,70%,55%)] mb-1 flex items-center gap-1">
-                ✨ L'astuce HaChef
-              </p>
-              <p className="text-xs text-[hsl(0,0%,55%)] leading-relaxed italic">{u.tip}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {utensils.map((u, i) => (
+                <motion.div
+                  key={u.name}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.05 + i * 0.07 }}
+                  className="rounded-2xl border border-[hsl(45,60%,40%,0.25)] bg-[hsl(0,0%,12%)] p-5 flex flex-col gap-3 hover:border-[hsl(45,60%,40%,0.5)] transition-colors group"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[hsl(45,70%,50%,0.12)] flex items-center justify-center group-hover:bg-[hsl(45,70%,50%,0.2)] transition-colors">
+                    <u.icon className="w-5 h-5 text-[hsl(45,70%,55%)]" />
+                  </div>
+                  <h3 className="font-display font-semibold text-sm text-[hsl(45,60%,75%)]">{u.name}</h3>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-[hsl(0,0%,45%)] mb-1">À quoi ça sert ?</p>
+                    <p className="text-xs text-[hsl(0,0%,65%)] leading-relaxed">{u.purpose}</p>
+                  </div>
+                  <div className="mt-auto pt-3 border-t border-[hsl(45,60%,40%,0.15)]">
+                    <p className="text-[10px] uppercase tracking-wider text-[hsl(45,70%,55%)] mb-1 flex items-center gap-1">✨ L'astuce HaChef</p>
+                    <p className="text-xs text-[hsl(0,0%,55%)] leading-relaxed italic">{u.tip}</p>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
-        ))}
-      </div>
+        )}
+      </AnimatePresence>
     </motion.section>
   );
 }

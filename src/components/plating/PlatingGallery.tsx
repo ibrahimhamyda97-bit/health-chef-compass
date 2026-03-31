@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 import platingEntree1 from "@/assets/plating-entree-1.jpg";
 import platingEntree2 from "@/assets/plating-entree-2.jpg";
@@ -109,7 +110,7 @@ const categories: Category[] = [
   },
 ];
 
-function PlatingCard({ item }: { item: PlatingItem }) {
+function PlatingCard({ item, onClickImage }: { item: PlatingItem; onClickImage: (img: string, title: string) => void }) {
   const [activeAnnotation, setActiveAnnotation] = useState<number | null>(null);
 
   return (
@@ -118,7 +119,7 @@ function PlatingCard({ item }: { item: PlatingItem }) {
       animate={{ opacity: 1, y: 0 }}
       className="group relative rounded-2xl overflow-hidden border border-[hsl(45,60%,40%,0.3)] bg-[hsl(0,0%,12%)]"
     >
-      <div className="relative aspect-square overflow-hidden">
+      <div className="relative aspect-square overflow-hidden cursor-pointer" onClick={() => onClickImage(item.image, item.title)}>
         <img
           src={item.image}
           alt={item.title}
@@ -132,7 +133,7 @@ function PlatingCard({ item }: { item: PlatingItem }) {
         {item.annotations.map((ann, i) => (
           <button
             key={i}
-            onClick={() => setActiveAnnotation(activeAnnotation === i ? null : i)}
+            onClick={(e) => { e.stopPropagation(); setActiveAnnotation(activeAnnotation === i ? null : i); }}
             style={{ left: `${ann.x}%`, top: `${ann.y}%` }}
             className="absolute z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-1/2 -translate-y-1/2"
           >
@@ -149,6 +150,7 @@ function PlatingCard({ item }: { item: PlatingItem }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/90 to-black/50 z-20"
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-start gap-2">
                 <span className="shrink-0 w-5 h-5 rounded-full bg-[hsl(45,70%,50%)] text-[hsl(0,0%,10%)] text-[10px] font-bold flex items-center justify-center mt-0.5">
@@ -168,13 +170,15 @@ function PlatingCard({ item }: { item: PlatingItem }) {
 
       <div className="p-4 border-t border-[hsl(45,60%,40%,0.2)]">
         <h3 className="font-display font-semibold text-sm text-[hsl(45,60%,75%)]">{item.title}</h3>
-        <p className="text-[hsl(0,0%,55%)] text-xs mt-1">Survolez pour découvrir les techniques</p>
+        <p className="text-[hsl(0,0%,55%)] text-xs mt-1">Cliquez pour agrandir · Survolez pour les techniques</p>
       </div>
     </motion.div>
   );
 }
 
 export default function PlatingGallery() {
+  const [lightbox, setLightbox] = useState<{ image: string; title: string } | null>(null);
+
   return (
     <>
       {categories.map((cat, ci) => (
@@ -190,11 +194,25 @@ export default function PlatingGallery() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 rounded-2xl bg-[hsl(0,0%,10%)] p-5 border border-[hsl(45,60%,40%,0.15)]">
             {cat.items.map((item) => (
-              <PlatingCard key={item.id} item={item} />
+              <PlatingCard key={item.id} item={item} onClickImage={(img, title) => setLightbox({ image: img, title })} />
             ))}
           </div>
         </motion.section>
       ))}
+
+      {/* Lightbox */}
+      <Dialog open={!!lightbox} onOpenChange={() => setLightbox(null)}>
+        <DialogContent className="max-w-3xl p-0 bg-[hsl(0,0%,8%)] border-[hsl(45,60%,40%,0.3)] overflow-hidden">
+          {lightbox && (
+            <div className="relative">
+              <img src={lightbox.image} alt={lightbox.title} className="w-full h-auto max-h-[80vh] object-contain" />
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                <h3 className="font-display font-semibold text-lg text-[hsl(45,60%,75%)]">{lightbox.title}</h3>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
