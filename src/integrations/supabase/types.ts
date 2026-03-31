@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      monetization_settings: {
+        Row: {
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pastry_courses: {
+        Row: {
+          content: string | null
+          created_at: string
+          description: string | null
+          difficulty: string
+          duration: string | null
+          id: string
+          image_url: string | null
+          published: boolean
+          steps: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          duration?: string | null
+          id?: string
+          image_url?: string | null
+          published?: boolean
+          steps?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          duration?: string | null
+          id?: string
+          image_url?: string | null
+          published?: boolean
+          steps?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

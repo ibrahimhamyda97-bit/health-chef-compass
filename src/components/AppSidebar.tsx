@@ -1,4 +1,4 @@
-import { LayoutDashboard, Refrigerator, ChefHat, Target, Heart, ShoppingCart, CalendarDays, ShieldCheck, Palette } from "lucide-react";
+import { LayoutDashboard, Refrigerator, ChefHat, Target, Heart, ShoppingCart, CalendarDays, ShieldCheck, Palette, BookOpen } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import {
@@ -22,6 +22,7 @@ const items = [
   { title: "Objectif Santé", url: "/objectifs", icon: Target },
   { title: "Favoris", url: "/favoris", icon: Heart },
   { title: "Art du Dressage", url: "/dressage", icon: Palette },
+  { title: "Cours Pâtisserie", url: "/cours-patisserie", icon: BookOpen },
   { title: "Administration", url: "/admin", icon: ShieldCheck },
 ];
 
