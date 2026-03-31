@@ -196,6 +196,8 @@ export default function TechniqueCourses() {
                 >
                   {isLearned ? "✓ Technique maîtrisée" : "J'ai appris cette technique"}
                 </Button>
+
+                <PhotoCapture courseTitle={course.title} courseImage={course.image} />
               </div>
             </motion.div>
           );
