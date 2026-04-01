@@ -108,4 +108,31 @@
   .bg-emerald-soft {
     background: hsl(155 60% 45% / 0.1);
   }
+
+  /* Safe area for bottom nav on notched devices */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* Touch optimizations */
+@media (max-width: 767px) {
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents zoom on focus in iOS */
+  }
+
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Active press effect for native feel */
+@media (hover: none) {
+  .active\:scale-90:active {
+    transform: scale(0.9);
+  }
+  .active\:scale-95:active {
+    transform: scale(0.95);
+  }
 }
