@@ -31,30 +31,24 @@ export default function MyFridge() {
     }
   };
 
-  // Match recipes where ALL ingredients from fridge are present in the recipe's ingredients/tags
+  // Match recipes where ALL recipe ingredients are found in the fridge
   const matchedRecipes = fridgeItems.length > 0
     ? recipes.filter((r) => {
-        const recipeIngredients = [
-          ...r.tags,
-          ...r.ingredients.map((i) => i.name.toLowerCase()),
-        ].join(" ");
-        return fridgeItems.every((item) =>
-          recipeIngredients.includes(item.toLowerCase())
+        const fridgeLower = fridgeItems.map((f) => f.toLowerCase());
+        return r.ingredients.every((ing) =>
+          fridgeLower.some((f) => ing.name.toLowerCase().includes(f) || f.includes(ing.name.toLowerCase()))
         );
       })
     : [];
 
-  // Partial matches (at least one ingredient matches)
+  // Partial matches: recipes where most ingredients are in the fridge but some are missing
   const partialMatches = fridgeItems.length > 0
     ? recipes.filter((r) => {
-        const recipeIngredients = [
-          ...r.tags,
-          ...r.ingredients.map((i) => i.name.toLowerCase()),
-        ].join(" ");
-        const matchCount = fridgeItems.filter((item) =>
-          recipeIngredients.includes(item.toLowerCase())
+        const fridgeLower = fridgeItems.map((f) => f.toLowerCase());
+        const matchCount = r.ingredients.filter((ing) =>
+          fridgeLower.some((f) => ing.name.toLowerCase().includes(f) || f.includes(ing.name.toLowerCase()))
         ).length;
-        return matchCount > 0 && matchCount < fridgeItems.length;
+        return matchCount > 0 && matchCount < r.ingredients.length && !matchedRecipes.includes(r);
       })
     : [];
 
@@ -72,13 +66,12 @@ export default function MyFridge() {
       ).filter((s) => !fridgeItems.some((f) => f.toLowerCase() === s.toLowerCase())).slice(0, 6)
     : [];
 
-  // For partial matches, show which ingredients are missing
+  // For partial matches, show which recipe ingredients are NOT in the fridge
   const getMissingIngredients = (r: typeof recipes[0]) => {
-    const recipeIngredients = [
-      ...r.tags,
-      ...r.ingredients.map((i) => i.name.toLowerCase()),
-    ].join(" ");
-    return fridgeItems.filter((item) => !recipeIngredients.includes(item.toLowerCase()));
+    const fridgeLower = fridgeItems.map((f) => f.toLowerCase());
+    return r.ingredients
+      .filter((ing) => !fridgeLower.some((f) => ing.name.toLowerCase().includes(f) || f.includes(ing.name.toLowerCase())))
+      .map((ing) => ing.name);
   };
 
   return (
