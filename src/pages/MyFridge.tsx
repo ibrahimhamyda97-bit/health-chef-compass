@@ -42,38 +42,6 @@ export default function MyFridge() {
       })
     : [];
 
-  // Partial matches: recipes where most ingredients are in the fridge but some are missing
-  const partialMatches = fridgeItems.length > 0
-    ? recipes.filter((r) => {
-        const fridgeLower = fridgeItems.map((f) => f.toLowerCase());
-        const matchCount = r.ingredients.filter((ing) =>
-          fridgeLower.some((f) => ing.name.toLowerCase().includes(f) || f.includes(ing.name.toLowerCase()))
-        ).length;
-        return matchCount > 0 && matchCount < r.ingredients.length && !matchedRecipes.includes(r);
-      })
-    : [];
-
-  // Generate ingredient suggestions based on what's in the fridge
-  const suggestions = fridgeItems.length > 0
-    ? Array.from(
-        new Set(
-          fridgeItems.flatMap((item) => {
-            const key = Object.keys(ingredientSuggestions).find(
-              (k) => item.toLowerCase().includes(k) || k.includes(item.toLowerCase())
-            );
-            return key ? ingredientSuggestions[key] : [];
-          })
-        )
-      ).filter((s) => !fridgeItems.some((f) => f.toLowerCase() === s.toLowerCase())).slice(0, 6)
-    : [];
-
-  // For partial matches, show which recipe ingredients are NOT in the fridge
-  const getMissingIngredients = (r: typeof recipes[0]) => {
-    const fridgeLower = fridgeItems.map((f) => f.toLowerCase());
-    return r.ingredients
-      .filter((ing) => !fridgeLower.some((f) => ing.name.toLowerCase().includes(f) || f.includes(ing.name.toLowerCase())))
-      .map((ing) => ing.name);
-  };
 
   return (
     <div className="space-y-6 max-w-4xl">
