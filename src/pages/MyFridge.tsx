@@ -2,7 +2,7 @@ import { useState, KeyboardEvent } from "react";
 import { useNutrition } from "@/context/NutritionContext";
 import { recipes } from "@/data/recipes";
 import { RecipeCard } from "@/components/RecipeCard";
-import { X, Plus, Lightbulb } from "lucide-react";
+import { X, Plus, Lightbulb, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 
@@ -23,7 +23,7 @@ const ingredientSuggestions: Record<string, string[]> = {
 export default function MyFridge() {
   const { fridgeItems, addFridgeItem, removeFridgeItem } = useNutrition();
   const [input, setInput] = useState("");
-
+  const [searchTriggered, setSearchTriggered] = useState(false);
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && input.trim()) {
       addFridgeItem(input);
@@ -97,6 +97,16 @@ export default function MyFridge() {
             <Plus className="w-4 h-4" />
           </button>
         </div>
+
+        {fridgeItems.length > 0 && (
+          <button
+            onClick={() => setSearchTriggered(true)}
+            className="w-full py-3 rounded-xl gradient-cobalt text-primary-foreground font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95"
+          >
+            <Search className="w-4 h-4" />
+            Rechercher des plats
+          </button>
+        )}
 
         {fridgeItems.length > 0 && (
           <div className="flex flex-wrap gap-2">
