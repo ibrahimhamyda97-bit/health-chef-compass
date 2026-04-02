@@ -6,7 +6,6 @@ import { X, Plus, Lightbulb, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 
-// Common ingredients that pair well
 const ingredientSuggestions: Record<string, string[]> = {
   poulet: ["riz", "citron", "oignon", "ail", "crème"],
   riz: ["poulet", "saumon", "sauce soja", "légumes", "oignon"],
@@ -24,6 +23,7 @@ export default function MyFridge() {
   const { fridgeItems, addFridgeItem, removeFridgeItem } = useNutrition();
   const [input, setInput] = useState("");
   const [searchTriggered, setSearchTriggered] = useState(false);
+
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && input.trim()) {
       addFridgeItem(input);
@@ -32,25 +32,56 @@ export default function MyFridge() {
     }
   };
 
-  // Match recipes where ALL recipe ingredients are found in the fridge
   const matchedRecipes = fridgeItems.length > 0
-    ? recipes.filter((r) => {
-        const fridgeLower = fridgeItems.map((f) => f.toLowerCase());
-        return r.ingredients.every((ing) =>
-          fridgeLower.some((f) => ing.name.toLowerCase().includes(f) || f.includes(ing.name.toLowerCase()))
-        );
+    ? recipes.filter((recipe) => {
+        const fridgeLower = fridgeItems.map((item) => item.toLowerCase().trim());
+
+        return recipe.ingredients.every((ingredient) => {
+          const ingredientName = ingredient.name.toLowerCase();
+          return fridgeLower.some(
+            (item) => ingredientName.includes(item) || item.includes(ingredientName)
+          );
+        });
       })
     : [];
 
+  const suggestions = fridgeItems.length > 0
+    ? Array.from(
+        new Set(
+          fridgeItems.flatMap((item) => {
+            const key = Object.keys(ingredientSuggestions).find(
+              (suggestionKey) =>
+                item.toLowerCase().includes(suggestionKey) ||
+                suggestionKey.includes(item.toLowerCase())
+            );
+            return key ? ingredientSuggestions[key] : [];
+          })
+        )
+      )
+        .filter(
+          (suggestion) =>
+            !fridgeItems.some(
+              (fridgeItem) => fridgeItem.toLowerCase() === suggestion.toLowerCase()
+            )
+        )
+        .slice(0, 6)
+    : [];
 
   return (
     <div className="space-y-6 max-w-4xl">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-display font-bold">Mon Frigo 🧊</h1>
-        <p className="text-muted-foreground text-sm">Ajoutez vos ingrédients pour découvrir les plats possibles.</p>
+        <p className="text-muted-foreground text-sm">
+          Ajoutez vos ingrédients pour découvrir les plats possibles.
+        </p>
       </motion.div>
 
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card-solid rounded-2xl p-5 space-y-4">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="glass-card-solid rounded-2xl p-5 space-y-4"
+      >
         <div className="flex gap-2">
           <Input
             value={input}
@@ -60,7 +91,13 @@ export default function MyFridge() {
             className="rounded-xl bg-secondary border-0 focus-visible:ring-1 focus-visible:ring-primary"
           />
           <button
-            onClick={() => { if (input.trim()) { addFridgeItem(input); setInput(""); } }}
+            onClick={() => {
+              if (input.trim()) {
+                addFridgeItem(input);
+                setInput("");
+                setSearchTriggered(false);
+              }
+            }}
             className="shrink-0 w-10 h-10 rounded-xl gradient-cobalt flex items-center justify-center text-primary-foreground hover:opacity-90 transition-opacity"
           >
             <Plus className="w-4 h-4" />
@@ -85,7 +122,13 @@ export default function MyFridge() {
                 className="inline-flex items-center gap-1 bg-secondary rounded-full px-3 py-1.5 text-sm font-medium"
               >
                 {item}
-                <button onClick={() => { removeFridgeItem(item); setSearchTriggered(false); }} className="hover:text-destructive transition-colors">
+                <button
+                  onClick={() => {
+                    removeFridgeItem(item);
+                    setSearchTriggered(false);
+                  }}
+                  className="hover:text-destructive transition-colors"
+                >
                   <X className="w-3 h-3" />
                 </button>
               </span>
@@ -93,7 +136,6 @@ export default function MyFridge() {
           </div>
         )}
 
-        {/* Ingredient suggestions */}
         {suggestions.length > 0 && (
           <div className="space-y-2">
             <p className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
@@ -101,13 +143,16 @@ export default function MyFridge() {
               Suggestions pour améliorer vos plats :
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {suggestions.map((s) => (
+              {suggestions.map((suggestion) => (
                 <button
-                  key={s}
-                  onClick={() => addFridgeItem(s)}
+                  key={suggestion}
+                  onClick={() => {
+                    addFridgeItem(suggestion);
+                    setSearchTriggered(false);
+                  }}
                   className="inline-flex items-center gap-1 bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium hover:bg-primary/20 transition-colors"
                 >
-                  <Plus className="w-3 h-3" /> {s}
+                  <Plus className="w-3 h-3" /> {suggestion}
                 </button>
               ))}
             </div>
@@ -115,48 +160,23 @@ export default function MyFridge() {
         )}
       </motion.div>
 
-      {/* Exact matches */}
       {searchTriggered && matchedRecipes.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <h2 className="text-lg font-display font-semibold mb-3">
-            🎯 {matchedRecipes.length} plat{matchedRecipes.length > 1 ? "s" : ""} avec vos ingrédients uniquement
+            🎯 {matchedRecipes.length} plat{matchedRecipes.length > 1 ? "s" : ""} possible{matchedRecipes.length > 1 ? "s" : ""} uniquement avec vos ingrédients
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {matchedRecipes.map((r) => (
-              <RecipeCard key={r.id} recipe={r} highlight />
+            {matchedRecipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} highlight />
             ))}
           </div>
         </motion.div>
       )}
 
-      {/* Partial matches with missing ingredient info */}
-      {searchTriggered && partialMatches.length > 0 && matchedRecipes.length === 0 && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <h2 className="text-lg font-display font-semibold mb-3">
-            🍳 {partialMatches.length} plat{partialMatches.length > 1 ? "s" : ""} partiellement possible{partialMatches.length > 1 ? "s" : ""}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {partialMatches.slice(0, 6).map((r) => {
-              const missing = getMissingIngredients(r);
-              return (
-                <div key={r.id} className="space-y-1">
-                  <RecipeCard recipe={r} />
-                  {missing.length > 0 && (
-                    <p className="text-[10px] text-muted-foreground px-2">
-                      ⚠️ Ne contient pas : {missing.join(", ")}
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-      )}
-
-      {searchTriggered && fridgeItems.length > 0 && matchedRecipes.length === 0 && partialMatches.length === 0 && (
+      {searchTriggered && fridgeItems.length > 0 && matchedRecipes.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
           <p className="text-4xl mb-2">🤔</p>
-          <p>Aucune recette trouvée avec ces ingrédients. Essayez d'en ajouter d'autres !</p>
+          <p>Aucun plat n'est réalisable uniquement avec les ingrédients ajoutés.</p>
         </div>
       )}
 
