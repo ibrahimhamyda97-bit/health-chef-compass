@@ -117,7 +117,7 @@ export default function MyFridge() {
                 className="inline-flex items-center gap-1 bg-secondary rounded-full px-3 py-1.5 text-sm font-medium"
               >
                 {item}
-                <button onClick={() => removeFridgeItem(item)} className="hover:text-destructive transition-colors">
+                <button onClick={() => { removeFridgeItem(item); setSearchTriggered(false); }} className="hover:text-destructive transition-colors">
                   <X className="w-3 h-3" />
                 </button>
               </span>
