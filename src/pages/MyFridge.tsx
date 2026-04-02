@@ -28,6 +28,7 @@ export default function MyFridge() {
     if (e.key === "Enter" && input.trim()) {
       addFridgeItem(input);
       setInput("");
+      setSearchTriggered(false);
     }
   };
 
@@ -147,7 +148,7 @@ export default function MyFridge() {
       </motion.div>
 
       {/* Exact matches */}
-      {matchedRecipes.length > 0 && (
+      {searchTriggered && matchedRecipes.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <h2 className="text-lg font-display font-semibold mb-3">
             🎯 {matchedRecipes.length} plat{matchedRecipes.length > 1 ? "s" : ""} avec vos ingrédients uniquement
@@ -161,7 +162,7 @@ export default function MyFridge() {
       )}
 
       {/* Partial matches with missing ingredient info */}
-      {partialMatches.length > 0 && matchedRecipes.length === 0 && (
+      {searchTriggered && partialMatches.length > 0 && matchedRecipes.length === 0 && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <h2 className="text-lg font-display font-semibold mb-3">
             🍳 {partialMatches.length} plat{partialMatches.length > 1 ? "s" : ""} partiellement possible{partialMatches.length > 1 ? "s" : ""}
@@ -184,7 +185,7 @@ export default function MyFridge() {
         </motion.div>
       )}
 
-      {fridgeItems.length > 0 && matchedRecipes.length === 0 && partialMatches.length === 0 && (
+      {searchTriggered && fridgeItems.length > 0 && matchedRecipes.length === 0 && partialMatches.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
           <p className="text-4xl mb-2">🤔</p>
           <p>Aucune recette trouvée avec ces ingrédients. Essayez d'en ajouter d'autres !</p>
