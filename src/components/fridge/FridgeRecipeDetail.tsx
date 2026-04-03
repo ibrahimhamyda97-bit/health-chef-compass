@@ -1,6 +1,8 @@
 import { Recipe } from "@/data/recipes";
-import { Clock, Flame, Dumbbell, Wheat } from "lucide-react";
+import { Clock, Flame, Dumbbell, Wheat, ShoppingCart, Check } from "lucide-react";
 import { useNutrition } from "@/context/NutritionContext";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface FridgeRecipeDetailProps {
   recipe: Recipe;
@@ -8,8 +10,34 @@ interface FridgeRecipeDetailProps {
 }
 
 export function FridgeRecipeDetail({ recipe, missingIngredients }: FridgeRecipeDetailProps) {
-  const { mode } = useNutrition();
+  const { mode, addShoppingItems } = useNutrition();
+  const [addedItems, setAddedItems] = useState<Set<string>>(new Set());
   const isHealthy = recipe.healthy && mode === "perte";
+
+  const missingWithQuantity = missingIngredients
+    ? recipe.ingredients.filter((ing) =>
+        missingIngredients.some(
+          (m) => ing.name.toLowerCase().includes(m.toLowerCase()) || m.toLowerCase().includes(ing.name.toLowerCase())
+        )
+      )
+    : [];
+
+  const handleAddToShoppingList = (name: string, quantity: string) => {
+    addShoppingItems([{ name, quantity }]);
+    setAddedItems((prev) => new Set(prev).add(name));
+    toast.success(`${name} ajouté à la liste de courses`);
+  };
+
+  const handleAddAllMissing = () => {
+    const items = missingWithQuantity.map((ing) => ({ name: ing.name, quantity: ing.quantity }));
+    addShoppingItems(items);
+    setAddedItems((prev) => {
+      const next = new Set(prev);
+      items.forEach((i) => next.add(i.name));
+      return next;
+    });
+    toast.success(`${items.length} ingrédient${items.length > 1 ? "s" : ""} ajouté${items.length > 1 ? "s" : ""} à la liste`);
+  };
 
   return (
     <div className={`glass-card-solid rounded-2xl p-5 space-y-4 ${isHealthy ? "ring-2 ring-emerald/30" : ""}`}>
@@ -33,10 +61,40 @@ export function FridgeRecipeDetail({ recipe, missingIngredients }: FridgeRecipeD
         </div>
       </div>
 
-      {missingIngredients && missingIngredients.length > 0 && (
-        <div className="bg-destructive/10 text-destructive rounded-xl px-4 py-2 text-sm">
-          <span className="font-semibold">Ingrédients manquants :</span>{" "}
-          {missingIngredients.join(", ")}
+      {missingWithQuantity.length > 0 && (
+        <div className="bg-destructive/10 rounded-xl px-4 py-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold text-destructive">
+              Ingrédients manquants ({missingWithQuantity.length})
+            </span>
+            <button
+              onClick={handleAddAllMissing}
+              className="text-xs font-medium bg-primary text-primary-foreground rounded-full px-3 py-1 hover:opacity-90 transition-opacity flex items-center gap-1"
+            >
+              <ShoppingCart className="w-3 h-3" />
+              Tout ajouter à la liste
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {missingWithQuantity.map((ing) => {
+              const isAdded = addedItems.has(ing.name);
+              return (
+                <button
+                  key={ing.name}
+                  onClick={() => !isAdded && handleAddToShoppingList(ing.name, ing.quantity)}
+                  disabled={isAdded}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
+                    isAdded
+                      ? "bg-emerald/10 text-emerald cursor-default"
+                      : "bg-background text-destructive hover:bg-primary hover:text-primary-foreground cursor-pointer"
+                  }`}
+                >
+                  {isAdded ? <Check className="w-3 h-3" /> : <ShoppingCart className="w-3 h-3" />}
+                  {ing.quantity} {ing.name}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 
