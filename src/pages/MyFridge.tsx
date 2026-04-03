@@ -24,6 +24,18 @@ export default function MyFridge() {
   const [input, setInput] = useState("");
   const [searchTriggered, setSearchTriggered] = useState(false);
 
+  const formatIngredientLabel = (value: string) =>
+    value
+      .split(" ")
+      .filter(Boolean)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
+  const hasFridgeItem = (...keywords: string[]) =>
+    fridgeItems.some((item) =>
+      keywords.some((keyword) => item.includes(keyword) || keyword.includes(item))
+    );
+
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && input.trim()) {
       addFridgeItem(input);
@@ -66,6 +78,88 @@ export default function MyFridge() {
         )
         .slice(0, 6)
     : [];
+
+  const fallbackRecipe = fridgeItems.length > 0
+    ? (() => {
+        const formattedItems = fridgeItems.map(formatIngredientLabel);
+
+        if (hasFridgeItem("oeuf", "œuf", "oeufs", "œufs")) {
+          return {
+            title: "Omelette du frigo",
+            emoji: "🍳",
+            description: `Une idée express préparée uniquement avec : ${formattedItems.join(", ")}.`,
+            steps: [
+              "Coupez les autres ingrédients ajoutés en petits morceaux si nécessaire.",
+              "Faites cuire ensemble les ingrédients qui doivent l'être, puis ajoutez-les aux œufs.",
+              "Laissez prendre doucement et servez dès que l'omelette est bien cuite.",
+            ],
+          };
+        }
+
+        if (hasFridgeItem("pâtes", "pates")) {
+          return {
+            title: "Pâtes du frigo",
+            emoji: "🍝",
+            description: `Un plat simple composé seulement avec : ${formattedItems.join(", ")}.`,
+            steps: [
+              "Faites cuire les pâtes, puis préparez le reste des ingrédients ajoutés.",
+              "Cuisez ou réchauffez ensemble les ingrédients compatibles.",
+              "Mélangez le tout avec les pâtes et servez aussitôt.",
+            ],
+          };
+        }
+
+        if (hasFridgeItem("riz")) {
+          return {
+            title: "Poêlée de riz du frigo",
+            emoji: "🍚",
+            description: `Une poêlée improvisée avec uniquement : ${formattedItems.join(", ")}.`,
+            steps: [
+              "Faites cuire le riz si besoin et préparez les autres ingrédients ajoutés.",
+              "Faites revenir ensemble les ingrédients qui gagnent à être chauds.",
+              "Ajoutez le riz, mélangez bien puis servez votre poêlée.",
+            ],
+          };
+        }
+
+        if (hasFridgeItem("salade", "laitue", "tomate", "avocat", "concombre")) {
+          return {
+            title: "Salade du frigo",
+            emoji: "🥗",
+            description: `Une assiette fraîche réalisée uniquement avec : ${formattedItems.join(", ")}.`,
+            steps: [
+              "Lavez et découpez tous les ingrédients ajoutés si nécessaire.",
+              "Assemblez-les dans un bol en répartissant bien les textures.",
+              "Servez immédiatement pour garder un maximum de fraîcheur.",
+            ],
+          };
+        }
+
+        if (hasFridgeItem("pain")) {
+          return {
+            title: "Tartines du frigo",
+            emoji: "🥪",
+            description: `Des tartines composées uniquement avec : ${formattedItems.join(", ")}.`,
+            steps: [
+              "Préparez les ingrédients ajoutés pour pouvoir garnir le pain facilement.",
+              "Déposez-les sur le pain dans l'ordre qui vous semble le plus gourmand.",
+              "Servez tel quel ou passez rapidement au chaud si certains ingrédients s'y prêtent.",
+            ],
+          };
+        }
+
+        return {
+          title: "Assiette du frigo",
+          emoji: "🍽️",
+          description: `Une idée de plat à faire uniquement avec : ${formattedItems.join(", ")}.`,
+          steps: [
+            "Préparez tous les ingrédients ajoutés en les découpant si besoin.",
+            "Faites cuire ensemble ceux qui doivent l'être, puis ajoutez les autres en fin de préparation.",
+            "Dressez l'ensemble dans une assiette et servez immédiatement.",
+          ],
+        };
+      })()
+    : null;
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -173,11 +267,52 @@ export default function MyFridge() {
         </motion.div>
       )}
 
-      {searchTriggered && fridgeItems.length > 0 && matchedRecipes.length === 0 && (
-        <div className="text-center py-12 text-muted-foreground">
-          <p className="text-4xl mb-2">🤔</p>
-          <p>Aucun plat n'est réalisable uniquement avec les ingrédients ajoutés.</p>
-        </div>
+      {searchTriggered && fridgeItems.length > 0 && matchedRecipes.length === 0 && fallbackRecipe && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="glass-card-solid rounded-2xl p-5 space-y-4"
+        >
+          <div>
+            <p className="text-xs font-medium text-primary mb-2">Suggestion automatique</p>
+            <div className="flex items-start gap-3">
+              <span className="text-4xl">{fallbackRecipe.emoji}</span>
+              <div>
+                <h2 className="text-lg font-display font-semibold">{fallbackRecipe.title}</h2>
+                <p className="text-sm text-muted-foreground">{fallbackRecipe.description}</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold mb-2">Ingrédients utilisés</h3>
+            <div className="flex flex-wrap gap-2">
+              {fridgeItems.map((item) => (
+                <span
+                  key={item}
+                  className="inline-flex items-center rounded-full bg-secondary px-3 py-1.5 text-sm font-medium"
+                >
+                  {formatIngredientLabel(item)}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold mb-2">Préparation</h3>
+            <ol className="space-y-2">
+              {fallbackRecipe.steps.map((step, index) => (
+                <li key={step} className="flex gap-3 text-sm">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full gradient-cobalt text-xs font-bold text-primary-foreground">
+                    {index + 1}
+                  </span>
+                  <span className="text-muted-foreground">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </motion.div>
       )}
 
       {fridgeItems.length === 0 && (
