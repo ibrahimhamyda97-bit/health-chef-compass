@@ -1,19 +1,29 @@
 import { useState, KeyboardEvent } from "react";
-import { X, Plus, Lightbulb } from "lucide-react";
+import { X, Plus, Lightbulb, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 const ingredientSuggestions: Record<string, string[]> = {
-  poulet: ["riz", "citron", "oignon", "ail", "crème"],
-  riz: ["poulet", "saumon", "sauce soja", "légumes", "oignon"],
-  tomate: ["mozzarella", "basilic", "oignon", "ail", "huile d'olive"],
-  avocat: ["citron", "crevettes", "mangue", "oignon rouge", "coriandre"],
-  saumon: ["citron", "aneth", "riz", "avocat", "sauce soja"],
-  oeuf: ["fromage", "épinards", "oignon", "crème", "beurre"],
-  pâtes: ["tomate", "parmesan", "ail", "basilic", "crème"],
-  boeuf: ["oignon", "tomate", "pomme de terre", "ail", "poivron"],
-  fromage: ["pain", "tomate", "salade", "oeuf", "jambon"],
-  salade: ["tomate", "concombre", "poulet", "avocat", "vinaigrette"],
+  poulet: ["riz", "citron", "oignon", "ail", "crème", "curry", "poivron", "champignons"],
+  riz: ["poulet", "saumon", "sauce soja", "légumes", "oignon", "crevettes", "curry"],
+  tomate: ["mozzarella", "basilic", "oignon", "ail", "huile d'olive", "pâtes", "boeuf"],
+  avocat: ["citron", "crevettes", "mangue", "oignon rouge", "coriandre", "saumon", "riz"],
+  saumon: ["citron", "aneth", "riz", "avocat", "sauce soja", "épinards", "crème"],
+  oeuf: ["fromage", "épinards", "oignon", "crème", "beurre", "jambon", "champignons"],
+  pâtes: ["tomate", "parmesan", "ail", "basilic", "crème", "boeuf", "champignons"],
+  boeuf: ["oignon", "tomate", "pomme de terre", "ail", "poivron", "riz", "champignons"],
+  fromage: ["pain", "tomate", "salade", "oeuf", "jambon", "champignons"],
+  salade: ["tomate", "concombre", "poulet", "avocat", "vinaigrette", "oeuf", "thon"],
+  crevettes: ["ail", "citron", "riz", "avocat", "sauce soja", "pâtes", "tomate"],
+  champignons: ["crème", "ail", "poulet", "pâtes", "oignon", "oeuf", "fromage"],
+  épinards: ["oeuf", "saumon", "crème", "ail", "fromage", "pâtes"],
+  concombre: ["tomate", "avocat", "citron", "salade", "oignon rouge"],
+  pomme_de_terre: ["oignon", "fromage", "crème", "ail", "boeuf", "poulet"],
 };
+
+const popularIngredients = [
+  "poulet", "riz", "pâtes", "tomate", "oignon", "ail", "oeuf",
+  "fromage", "salade", "avocat", "saumon", "champignons",
+];
 
 interface FridgeInputProps {
   fridgeItems: string[];
@@ -33,7 +43,7 @@ export function FridgeInput({ fridgeItems, addFridgeItem, removeFridgeItem, onIt
     }
   };
 
-  const suggestions = fridgeItems.length > 0
+  const contextSuggestions = fridgeItems.length > 0
     ? Array.from(
         new Set(
           fridgeItems.flatMap((item) => {
@@ -45,8 +55,14 @@ export function FridgeInput({ fridgeItems, addFridgeItem, removeFridgeItem, onIt
         )
       )
         .filter((s) => !fridgeItems.some((fi) => fi.toLowerCase() === s.toLowerCase()))
-        .slice(0, 6)
+        .slice(0, 8)
     : [];
+
+  const quickAddSuggestions = fridgeItems.length === 0
+    ? popularIngredients.slice(0, 8)
+    : [];
+
+  const suggestions = contextSuggestions.length > 0 ? contextSuggestions : quickAddSuggestions;
 
   return (
     <div className="space-y-4">
@@ -94,8 +110,11 @@ export function FridgeInput({ fridgeItems, addFridgeItem, removeFridgeItem, onIt
       {suggestions.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-            <Lightbulb className="w-3.5 h-3.5 text-primary" />
-            Suggestions pour améliorer vos plats :
+            {fridgeItems.length === 0 ? (
+              <><Sparkles className="w-3.5 h-3.5 text-primary" /> Ingrédients populaires :</>
+            ) : (
+              <><Lightbulb className="w-3.5 h-3.5 text-primary" /> Suggestions pour enrichir vos plats :</>
+            )}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {suggestions.map((suggestion) => (
