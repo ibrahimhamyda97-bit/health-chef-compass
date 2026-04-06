@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { FridgeInput } from "@/components/fridge/FridgeInput";
 import { FridgeRecipeDetail } from "@/components/fridge/FridgeRecipeDetail";
 import { FridgeFallback } from "@/components/fridge/FridgeFallback";
+import { HamIA } from "@/components/fridge/HamIA";
 
 function ingredientMatches(ingredientName: string, fridgeItems: string[]): boolean {
   const name = ingredientName.toLowerCase();
@@ -89,6 +90,13 @@ export default function MyFridge() {
           </button>
         )}
       </motion.div>
+
+      {/* HamIA - AI Chef */}
+      {fridgeItems.length > 0 && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <HamIA fridgeItems={fridgeItems} />
+        </motion.div>
+      )}
 
       {searchTriggered && exactMatches.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-4">
