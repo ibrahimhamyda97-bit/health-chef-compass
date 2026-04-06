@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { FridgeInput } from "@/components/fridge/FridgeInput";
 import { FridgeRecipeDetail } from "@/components/fridge/FridgeRecipeDetail";
 import { FridgeFallback } from "@/components/fridge/FridgeFallback";
+import { HamIA } from "@/components/fridge/HamIA";
 
 function ingredientMatches(ingredientName: string, fridgeItems: string[]): boolean {
   const name = ingredientName.toLowerCase();
