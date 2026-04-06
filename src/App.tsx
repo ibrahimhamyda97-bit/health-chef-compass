@@ -8,6 +8,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import Overview from "@/pages/Overview";
 import MyFridge from "@/pages/MyFridge";
+import AuBoulanger from "@/pages/AuBoulanger";
 import RecipeSearch from "@/pages/RecipeSearch";
 import HealthGoals from "@/pages/HealthGoals";
 import Favorites from "@/pages/Favorites";
@@ -35,6 +36,7 @@ const App = () => (
                 <Route path="/" element={<Overview />} />
                 <Route path="/frigo" element={<MyFridge />} />
                 <Route path="/recettes" element={<RecipeSearch />} />
+                <Route path="/boulanger" element={<AuBoulanger />} />
                 <Route path="/courses" element={<ShoppingList />} />
                 <Route path="/objectifs" element={<HealthGoals />} />
                 <Route path="/favoris" element={<Favorites />} />
