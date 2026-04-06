@@ -10,7 +10,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { ingredients, mode } = await req.json();
+    const { ingredients, mode, pastryMode } = await req.json();
     if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
       return new Response(JSON.stringify({ error: "Ingrédients requis" }), {
         status: 400,
@@ -28,10 +28,14 @@ serve(async (req) => {
       modeInstruction = "\nIMPORTANT : La recette doit être riche en protéines pour la prise de masse (au moins 30g de protéines par personne).";
     }
 
+    const pastryInstruction = pastryMode
+      ? "\nIMPORTANT : Crée UNIQUEMENT un dessert ou une pâtisserie (gâteau, tarte, mousse, crème, biscuit, etc.). Pas de plat salé."
+      : "";
+
     const systemPrompt = `Tu es HamIA, une cheffe cuisinière virtuelle experte et chaleureuse. Tu crées des recettes savoureuses à partir des ingrédients disponibles. Réponds UNIQUEMENT avec un JSON valide, sans markdown, sans commentaire.`;
 
     const userPrompt = `Crée une recette complète et détaillée en utilisant UNIQUEMENT ces ingrédients : ${ingredients.join(", ")}.
-Tu peux ajouter des assaisonnements de base (sel, poivre, huile d'olive) sans les compter comme ingrédients supplémentaires.${modeInstruction}
+Tu peux ajouter des assaisonnements de base (sel, poivre, huile d'olive, sucre, farine) sans les compter comme ingrédients supplémentaires.${modeInstruction}${pastryInstruction}
 
 Retourne EXACTEMENT ce format JSON :
 {
