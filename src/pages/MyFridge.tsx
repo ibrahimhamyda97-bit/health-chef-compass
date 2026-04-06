@@ -91,7 +91,12 @@ export default function MyFridge() {
         )}
       </motion.div>
 
-      {searchTriggered && exactMatches.length > 0 && (
+      {/* HamIA - AI Chef */}
+      {fridgeItems.length > 0 && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <HamIA fridgeItems={fridgeItems} />
+        </motion.div>
+      )}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-4">
           <h2 className="text-lg font-display font-semibold">
             🎯 {exactMatches.length} plat{exactMatches.length > 1 ? "s" : ""} réalisable{exactMatches.length > 1 ? "s" : ""} avec vos ingrédients
