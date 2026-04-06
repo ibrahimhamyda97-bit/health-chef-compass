@@ -1,11 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Refrigerator, ChefHat, CalendarDays, Heart } from "lucide-react";
+import { LayoutDashboard, Refrigerator, CakeSlice, CalendarDays, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
   { label: "Accueil", path: "/", icon: LayoutDashboard },
   { label: "Frigo", path: "/frigo", icon: Refrigerator },
-  { label: "Recettes", path: "/recettes", icon: ChefHat },
+  { label: "Boulanger", path: "/boulanger", icon: CakeSlice },
   { label: "Planning", path: "/planning", icon: CalendarDays },
   { label: "Favoris", path: "/favoris", icon: Heart },
 ];
