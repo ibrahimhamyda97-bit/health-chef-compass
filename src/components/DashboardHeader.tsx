@@ -1,4 +1,4 @@
-import { Search, User, LogOut } from "lucide-react";
+import { User, LogOut } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
