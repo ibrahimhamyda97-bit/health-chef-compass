@@ -208,6 +208,18 @@ export default function TechniqueCourses() {
           );
         })}
       </div>
+
+      <Dialog open={!!zoomedImage} onOpenChange={() => setZoomedImage(null)}>
+        <DialogContent className="max-w-3xl p-2 bg-[hsl(0,0%,8%)] border-[hsl(45,60%,40%,0.3)]">
+          {zoomedImage && (
+            <img
+              src={zoomedImage.src}
+              alt={zoomedImage.alt}
+              className="w-full h-auto rounded-lg"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </motion.section>
   );
 }
