@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GraduationCap, ChevronDown, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import PhotoCapture from "./PhotoCapture";
 
 import techniqueVirgule from "@/assets/technique-virgule.jpg";
@@ -89,6 +90,7 @@ function getLearnedTechniques(): string[] {
 export default function TechniqueCourses() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [learned, setLearned] = useState<string[]>(getLearnedTechniques);
+  const [zoomedImage, setZoomedImage] = useState<{ src: string; alt: string } | null>(null);
 
   const toggleLearned = (id: string) => {
     const next = learned.includes(id)
@@ -126,14 +128,17 @@ export default function TechniqueCourses() {
               className="rounded-2xl overflow-hidden border border-[hsl(45,60%,40%,0.25)] bg-[hsl(0,0%,12%)]"
             >
               {/* Image */}
-              <div className="relative h-44 overflow-hidden">
+              <div
+                className="relative h-44 overflow-hidden cursor-zoom-in"
+                onClick={() => setZoomedImage({ src: course.image, alt: course.title })}
+              >
                 <img
                   src={course.image}
                   alt={course.title}
                   loading="lazy"
                   width={640}
                   height={640}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform hover:scale-105"
                 />
                 {isLearned && (
                   <div className="absolute top-3 right-3 bg-[hsl(45,70%,50%)] text-[hsl(0,0%,10%)] text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
@@ -203,6 +208,18 @@ export default function TechniqueCourses() {
           );
         })}
       </div>
+
+      <Dialog open={!!zoomedImage} onOpenChange={() => setZoomedImage(null)}>
+        <DialogContent className="max-w-3xl p-2 bg-[hsl(0,0%,8%)] border-[hsl(45,60%,40%,0.3)]">
+          {zoomedImage && (
+            <img
+              src={zoomedImage.src}
+              alt={zoomedImage.alt}
+              className="w-full h-auto rounded-lg"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </motion.section>
   );
 }
