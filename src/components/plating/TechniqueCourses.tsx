@@ -128,14 +128,17 @@ export default function TechniqueCourses() {
               className="rounded-2xl overflow-hidden border border-[hsl(45,60%,40%,0.25)] bg-[hsl(0,0%,12%)]"
             >
               {/* Image */}
-              <div className="relative h-44 overflow-hidden">
+              <div
+                className="relative h-44 overflow-hidden cursor-zoom-in"
+                onClick={() => setZoomedImage({ src: course.image, alt: course.title })}
+              >
                 <img
                   src={course.image}
                   alt={course.title}
                   loading="lazy"
                   width={640}
                   height={640}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform hover:scale-105"
                 />
                 {isLearned && (
                   <div className="absolute top-3 right-3 bg-[hsl(45,70%,50%)] text-[hsl(0,0%,10%)] text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1">
