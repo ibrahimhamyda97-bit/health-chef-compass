@@ -90,6 +90,7 @@ function getLearnedTechniques(): string[] {
 export default function TechniqueCourses() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [learned, setLearned] = useState<string[]>(getLearnedTechniques);
+  const [zoomedImage, setZoomedImage] = useState<{ src: string; alt: string } | null>(null);
 
   const toggleLearned = (id: string) => {
     const next = learned.includes(id)
