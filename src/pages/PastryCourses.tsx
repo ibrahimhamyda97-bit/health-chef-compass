@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, ChevronDown, Clock, BarChart3 } from "lucide-react";
+import { BookOpen, ChevronDown, Clock, BarChart3, Image, Video, Play } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface PastryCourse {
   id: string;
@@ -13,6 +14,8 @@ interface PastryCourse {
   content: string | null;
   steps: string[];
   published: boolean;
+  photos: string[];
+  videos: string[];
 }
 
 const difficultyColors: Record<string, string> = {
@@ -25,11 +28,17 @@ export default function PastryCourses() {
   const [courses, setCourses] = useState<PastryCourse[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [zoomedMedia, setZoomedMedia] = useState<{ type: "photo" | "video"; src: string } | null>(null);
 
   useEffect(() => {
     const fetchCourses = async () => {
       const { data } = await supabase.from("pastry_courses").select("*").eq("published", true).order("created_at", { ascending: false });
-      if (data) setCourses(data.map((c: any) => ({ ...c, steps: Array.isArray(c.steps) ? c.steps : [] })));
+      if (data) setCourses(data.map((c: any) => ({
+        ...c,
+        steps: Array.isArray(c.steps) ? c.steps : [],
+        photos: Array.isArray(c.photos) ? c.photos : [],
+        videos: Array.isArray(c.videos) ? c.videos : [],
+      })));
       setLoading(false);
     };
     fetchCourses();
@@ -79,6 +88,42 @@ export default function PastryCourses() {
                 )}
                 {course.description && <p className="text-sm text-muted-foreground">{course.description}</p>}
 
+                {/* Photos gallery */}
+                {course.photos.length > 0 && (
+                  <div>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1 mb-2"><Image className="w-3 h-3" /> Photos</p>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {course.photos.map((photo, pi) => (
+                        <img
+                          key={pi}
+                          src={photo}
+                          alt={`${course.title} photo ${pi + 1}`}
+                          className="w-20 h-20 rounded-lg object-cover cursor-zoom-in hover:scale-105 transition-transform shrink-0"
+                          onClick={() => setZoomedMedia({ type: "photo", src: photo })}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Videos */}
+                {course.videos.length > 0 && (
+                  <div>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1 mb-2"><Video className="w-3 h-3" /> Vidéos</p>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {course.videos.map((video, vi) => (
+                        <button
+                          key={vi}
+                          onClick={() => setZoomedMedia({ type: "video", src: video })}
+                          className="w-24 h-16 rounded-lg bg-muted flex items-center justify-center shrink-0 hover:bg-muted/80 transition-colors"
+                        >
+                          <Play className="w-6 h-6 text-primary" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {course.content && (
                   <div>
                     <button
@@ -119,6 +164,18 @@ export default function PastryCourses() {
           ))}
         </div>
       )}
+
+      {/* Media zoom dialog */}
+      <Dialog open={!!zoomedMedia} onOpenChange={() => setZoomedMedia(null)}>
+        <DialogContent className="max-w-3xl p-2">
+          {zoomedMedia?.type === "photo" && (
+            <img src={zoomedMedia.src} alt="Zoom" className="w-full h-auto rounded-lg" />
+          )}
+          {zoomedMedia?.type === "video" && (
+            <video src={zoomedMedia.src} controls autoPlay className="w-full rounded-lg" />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

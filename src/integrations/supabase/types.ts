@@ -14,20 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
+      event_cakes: {
+        Row: {
+          available: boolean
+          base_price: number
+          created_at: string
+          description: string | null
+          event_type: string
+          id: string
+          image_url: string | null
+          name: string
+          options: Json | null
+          servings_max: number | null
+          servings_min: number | null
+          updated_at: string
+        }
+        Insert: {
+          available?: boolean
+          base_price?: number
+          created_at?: string
+          description?: string | null
+          event_type?: string
+          id?: string
+          image_url?: string | null
+          name: string
+          options?: Json | null
+          servings_max?: number | null
+          servings_min?: number | null
+          updated_at?: string
+        }
+        Update: {
+          available?: boolean
+          base_price?: number
+          created_at?: string
+          description?: string | null
+          event_type?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          options?: Json | null
+          servings_max?: number | null
+          servings_min?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       monetization_settings: {
         Row: {
+          feature_key: string | null
           id: string
           setting_key: string
           setting_value: Json
           updated_at: string
         }
         Insert: {
+          feature_key?: string | null
           id?: string
           setting_key: string
           setting_value?: Json
           updated_at?: string
         }
         Update: {
+          feature_key?: string | null
           id?: string
           setting_key?: string
           setting_value?: Json
@@ -44,10 +92,12 @@ export type Database = {
           duration: string | null
           id: string
           image_url: string | null
+          photos: Json | null
           published: boolean
           steps: Json | null
           title: string
           updated_at: string
+          videos: Json | null
         }
         Insert: {
           content?: string | null
@@ -57,10 +107,12 @@ export type Database = {
           duration?: string | null
           id?: string
           image_url?: string | null
+          photos?: Json | null
           published?: boolean
           steps?: Json | null
           title: string
           updated_at?: string
+          videos?: Json | null
         }
         Update: {
           content?: string | null
@@ -70,10 +122,12 @@ export type Database = {
           duration?: string | null
           id?: string
           image_url?: string | null
+          photos?: Json | null
           published?: boolean
           steps?: Json | null
           title?: string
           updated_at?: string
+          videos?: Json | null
         }
         Relationships: []
       }
