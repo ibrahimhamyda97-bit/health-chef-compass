@@ -53,6 +53,53 @@ export type Database = {
         }
         Relationships: []
       }
+      cake_orders: {
+        Row: {
+          buyer_email: string
+          buyer_name: string
+          buyer_phone: string | null
+          cake_listing_id: string
+          created_at: string
+          event_date: string | null
+          id: string
+          message: string | null
+          servings: number | null
+          status: string
+        }
+        Insert: {
+          buyer_email: string
+          buyer_name: string
+          buyer_phone?: string | null
+          cake_listing_id: string
+          created_at?: string
+          event_date?: string | null
+          id?: string
+          message?: string | null
+          servings?: number | null
+          status?: string
+        }
+        Update: {
+          buyer_email?: string
+          buyer_name?: string
+          buyer_phone?: string | null
+          cake_listing_id?: string
+          created_at?: string
+          event_date?: string | null
+          id?: string
+          message?: string | null
+          servings?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cake_orders_cake_listing_id_fkey"
+            columns: ["cake_listing_id"]
+            isOneToOne: false
+            referencedRelation: "cake_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_cakes: {
         Row: {
           available: boolean

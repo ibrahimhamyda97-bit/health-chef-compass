@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import { CakeOrderDialog } from "@/components/boulanger/CakeOrderDialog";
 
 interface CakeListing {
   id: string;
@@ -258,6 +259,9 @@ export default function AuBoulanger() {
                   >
                     <Trash2 className="w-3 h-3 mr-1" /> Supprimer
                   </Button>
+                )}
+                {(!user || user.id !== listing.user_id) && (
+                  <CakeOrderDialog listingId={listing.id} cakeTitle={listing.title} price={listing.price} />
                 )}
               </div>
             </motion.div>
