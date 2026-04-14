@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import { CakeOrderDialog } from "@/components/boulanger/CakeOrderDialog";
 
 interface CakeListing {
   id: string;
