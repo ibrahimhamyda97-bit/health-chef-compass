@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      cake_listings: {
+        Row: {
+          city: string
+          country: string
+          created_at: string
+          description: string | null
+          id: string
+          photo_url: string
+          price: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          city?: string
+          country?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          photo_url: string
+          price?: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          city?: string
+          country?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          photo_url?: string
+          price?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       event_cakes: {
         Row: {
           available: boolean

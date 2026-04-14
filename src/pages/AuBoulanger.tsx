@@ -1,373 +1,276 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CakeSlice, Clock, ChefHat, Sparkles, Loader2, ArrowLeft } from "lucide-react";
+import { CakeSlice, Plus, MapPin, Loader2, Trash2, ImagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useNutrition } from "@/context/NutritionContext";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { AIRecipeDetail, AIRecipe } from "@/components/AIRecipeDetail";
-import hamiaAvatar from "@/assets/hamia-avatar.png";
+import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
-interface PastryRecipe {
+interface CakeListing {
   id: string;
-  name: string;
-  image: string;
-  difficulty: string;
-  duration: string;
-  ingredients: { name: string; quantity: string }[];
-  steps: string[];
+  user_id: string;
+  photo_url: string;
+  title: string;
+  description: string | null;
+  price: number;
+  country: string;
+  city: string;
+  created_at: string;
 }
 
-const pastryRecipes: PastryRecipe[] = [
-  {
-    id: "p1",
-    name: "Fondant au Chocolat",
-    image: "🍫",
-    difficulty: "débutant",
-    duration: "30 min",
-    ingredients: [
-      { name: "Chocolat noir", quantity: "200g" },
-      { name: "Beurre", quantity: "100g" },
-      { name: "Sucre", quantity: "80g" },
-      { name: "Œufs", quantity: "3" },
-      { name: "Farine", quantity: "50g" },
-    ],
-    steps: [
-      "Préchauffer le four à 180°C.",
-      "Faire fondre le chocolat et le beurre au bain-marie.",
-      "Fouetter les œufs avec le sucre jusqu'à blanchiment.",
-      "Incorporer le mélange chocolat-beurre, puis la farine tamisée.",
-      "Verser dans un moule beurré et cuire 12-15 min.",
-    ],
-  },
-  {
-    id: "p2",
-    name: "Tarte aux Pommes",
-    image: "🍎",
-    difficulty: "intermédiaire",
-    duration: "1h",
-    ingredients: [
-      { name: "Pâte brisée", quantity: "1 rouleau" },
-      { name: "Pommes", quantity: "5" },
-      { name: "Sucre", quantity: "60g" },
-      { name: "Beurre", quantity: "30g" },
-      { name: "Cannelle", quantity: "1 c. à café" },
-      { name: "Compote de pommes", quantity: "3 c. à soupe" },
-    ],
-    steps: [
-      "Préchauffer le four à 200°C.",
-      "Étaler la pâte dans un moule et piquer le fond avec une fourchette.",
-      "Étaler la compote sur le fond de tarte.",
-      "Éplucher et couper les pommes en fines lamelles.",
-      "Disposer les lamelles en rosace, saupoudrer de sucre et cannelle.",
-      "Parsemer de noisettes de beurre et cuire 35-40 min.",
-    ],
-  },
-  {
-    id: "p3",
-    name: "Crêpes Sucrées",
-    image: "🥞",
-    difficulty: "débutant",
-    duration: "25 min",
-    ingredients: [
-      { name: "Farine", quantity: "250g" },
-      { name: "Œufs", quantity: "3" },
-      { name: "Lait", quantity: "50cl" },
-      { name: "Sucre", quantity: "30g" },
-      { name: "Beurre fondu", quantity: "30g" },
-      { name: "Sel", quantity: "1 pincée" },
-    ],
-    steps: [
-      "Mélanger la farine, le sucre et le sel dans un saladier.",
-      "Creuser un puits, ajouter les œufs et mélanger.",
-      "Verser le lait progressivement en fouettant pour éviter les grumeaux.",
-      "Ajouter le beurre fondu et laisser reposer 30 min.",
-      "Cuire chaque crêpe dans une poêle beurrée, 1-2 min par face.",
-    ],
-  },
-  {
-    id: "p4",
-    name: "Mousse au Chocolat",
-    image: "🍮",
-    difficulty: "débutant",
-    duration: "20 min + repos",
-    ingredients: [
-      { name: "Chocolat noir", quantity: "200g" },
-      { name: "Œufs", quantity: "6" },
-      { name: "Sucre", quantity: "30g" },
-      { name: "Sel", quantity: "1 pincée" },
-    ],
-    steps: [
-      "Faire fondre le chocolat au bain-marie et laisser tiédir.",
-      "Séparer les blancs des jaunes d'œufs.",
-      "Incorporer les jaunes au chocolat fondu.",
-      "Monter les blancs en neige ferme avec le sel et le sucre.",
-      "Incorporer délicatement les blancs au chocolat en 3 fois.",
-      "Réfrigérer au moins 4h avant de servir.",
-    ],
-  },
-  {
-    id: "p5",
-    name: "Cake au Citron",
-    image: "🍋",
-    difficulty: "débutant",
-    duration: "50 min",
-    ingredients: [
-      { name: "Farine", quantity: "200g" },
-      { name: "Sucre", quantity: "150g" },
-      { name: "Beurre", quantity: "100g" },
-      { name: "Œufs", quantity: "3" },
-      { name: "Citrons", quantity: "2 (zeste + jus)" },
-      { name: "Levure chimique", quantity: "1 sachet" },
-    ],
-    steps: [
-      "Préchauffer le four à 170°C.",
-      "Battre le beurre mou avec le sucre jusqu'à crémeux.",
-      "Ajouter les œufs un à un, puis le zeste et le jus de citron.",
-      "Incorporer la farine et la levure tamisées.",
-      "Verser dans un moule à cake beurré et cuire 40 min.",
-      "Laisser tiédir, démouler et napper de glaçage citron.",
-    ],
-  },
-  {
-    id: "p6",
-    name: "Madeleines",
-    image: "🧁",
-    difficulty: "intermédiaire",
-    duration: "35 min + repos",
-    ingredients: [
-      { name: "Farine", quantity: "150g" },
-      { name: "Sucre", quantity: "100g" },
-      { name: "Beurre", quantity: "125g" },
-      { name: "Œufs", quantity: "3" },
-      { name: "Miel", quantity: "1 c. à soupe" },
-      { name: "Levure chimique", quantity: "½ sachet" },
-    ],
-    steps: [
-      "Fondre le beurre et laisser refroidir.",
-      "Fouetter les œufs avec le sucre et le miel.",
-      "Incorporer la farine et la levure, puis le beurre fondu.",
-      "Réfrigérer la pâte au moins 1h (idéalement une nuit).",
-      "Beurrer les moules, remplir aux ¾ et cuire à 220°C 5 min puis 180°C 7 min.",
-    ],
-  },
-];
-
-const difficultyColors: Record<string, string> = {
-  "débutant": "bg-emerald-500/10 text-emerald-600",
-  "intermédiaire": "bg-amber-500/10 text-amber-600",
-  "avancé": "bg-red-500/10 text-red-600",
-};
-
 export default function AuBoulanger() {
-  const { fridgeItems, mode } = useNutrition();
-  const [selectedRecipe, setSelectedRecipe] = useState<PastryRecipe | null>(null);
-  const [aiRecipe, setAiRecipe] = useState<(AIRecipe & { hamia_tip?: string }) | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
+  const { user } = useAuth();
+  const [listings, setListings] = useState<CakeListing[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [zoomedPhoto, setZoomedPhoto] = useState<string | null>(null);
 
-  const generatePastryFromFridge = async () => {
-    if (fridgeItems.length === 0) {
-      toast.error("Ajoutez d'abord des ingrédients dans Mon Frigo !");
+  // Form state
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+
+  const fetchListings = async () => {
+    const { data } = await supabase
+      .from("cake_listings")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (data) setListings(data as CakeListing[]);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchListings();
+  }, []);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const handleSubmit = async () => {
+    if (!user) {
+      toast.error("Connectez-vous pour publier un gâteau.");
       return;
     }
-    setAiLoading(true);
-    setAiRecipe(null);
+    if (!photoFile || !title.trim() || !price.trim()) {
+      toast.error("Photo, titre et prix sont obligatoires.");
+      return;
+    }
+
+    setUploading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("fridge-recipe", {
-        body: {
-          ingredients: fridgeItems,
-          mode,
-          pastryMode: true,
-        },
+      const ext = photoFile.name.split(".").pop();
+      const filePath = `${user.id}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("cake-photos")
+        .upload(filePath, photoFile);
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from("cake-photos")
+        .getPublicUrl(filePath);
+
+      const { error: insertError } = await supabase.from("cake_listings").insert({
+        user_id: user.id,
+        photo_url: urlData.publicUrl,
+        title: title.trim(),
+        description: description.trim() || null,
+        price: parseFloat(price),
+        country: country.trim(),
+        city: city.trim(),
       });
-      if (error) throw new Error(error.message);
-      if (data?.error) throw new Error(data.error);
-      if (!data?.recipe) throw new Error("Aucune recette générée");
-      setAiRecipe(data.recipe);
+      if (insertError) throw insertError;
+
+      toast.success("Gâteau publié avec succès !");
+      setTitle("");
+      setDescription("");
+      setPrice("");
+      setCountry("");
+      setCity("");
+      setPhotoFile(null);
+      setPhotoPreview(null);
+      setDialogOpen(false);
+      fetchListings();
     } catch (e: any) {
-      console.error("HamIA pastry error:", e);
-      toast.error(e.message || "Erreur lors de la génération");
+      console.error(e);
+      toast.error(e.message || "Erreur lors de la publication.");
     } finally {
-      setAiLoading(false);
+      setUploading(false);
     }
   };
 
-  // AI recipe view
-  if (aiRecipe) {
-    return (
-      <div className="space-y-4 max-w-4xl">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <button
-            onClick={() => setAiRecipe(null)}
-            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" /> Retour
-          </button>
-          <div className="flex items-center gap-3 mb-2">
-            <img src={hamiaAvatar} alt="HamIA" className="w-10 h-10 rounded-full ring-2 ring-primary/30" />
-            <div>
-              <p className="text-sm font-semibold text-primary">HamIA – Pâtissière</p>
-              <p className="text-xs text-muted-foreground">Voici ma suggestion sucrée !</p>
-            </div>
-          </div>
-          {aiRecipe.hamia_tip && (
-            <div className="flex items-start gap-3 bg-primary/5 border border-primary/10 rounded-xl p-4 mb-4">
-              <ChefHat className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <p className="text-sm text-foreground/80 italic">💡 {aiRecipe.hamia_tip}</p>
-            </div>
-          )}
-        </motion.div>
-        <AIRecipeDetail recipe={aiRecipe} onBack={() => setAiRecipe(null)} />
-      </div>
-    );
-  }
-
-  // Selected local recipe view
-  if (selectedRecipe) {
-    return (
-      <div className="space-y-6 max-w-4xl">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <button
-            onClick={() => setSelectedRecipe(null)}
-            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" /> Retour
-          </button>
-          <div className="flex items-center gap-3 mb-6">
-            <span className="text-4xl">{selectedRecipe.image}</span>
-            <div>
-              <h1 className="text-2xl font-display font-bold">{selectedRecipe.name}</h1>
-              <p className="text-sm text-muted-foreground flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5" /> {selectedRecipe.duration}
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${difficultyColors[selectedRecipe.difficulty] || "bg-muted text-muted-foreground"}`}>
-                  {selectedRecipe.difficulty}
-                </span>
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="glass-card-solid rounded-2xl p-5">
-            <h2 className="font-display font-semibold mb-4">Ingrédients</h2>
-            <ul className="space-y-2">
-              {selectedRecipe.ingredients.map((ing, i) => (
-                <li key={i} className="flex justify-between text-sm py-2 border-b border-border last:border-0">
-                  <span>{ing.name}</span>
-                  <span className="text-muted-foreground font-medium">{ing.quantity}</span>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }} className="glass-card-solid rounded-2xl p-5">
-            <h2 className="font-display font-semibold mb-4">Préparation</h2>
-            <ol className="space-y-4">
-              {selectedRecipe.steps.map((step, i) => (
-                <li key={i} className="flex gap-3">
-                  <span className="shrink-0 w-6 h-6 rounded-full gradient-cobalt text-primary-foreground text-xs flex items-center justify-center font-bold">{i + 1}</span>
-                  <p className="text-sm leading-relaxed">{step}</p>
-                </li>
-              ))}
-            </ol>
-          </motion.div>
-        </div>
-      </div>
-    );
-  }
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("cake_listings").delete().eq("id", id);
+    if (error) {
+      toast.error("Erreur lors de la suppression.");
+    } else {
+      toast.success("Annonce supprimée.");
+      setListings((prev) => prev.filter((l) => l.id !== id));
+    }
+  };
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-display font-bold flex items-center gap-2">
-          Au Boulanger 🥐
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          Recettes de pâtisserie et suggestions sucrées par HamIA.
-        </p>
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-display font-bold flex items-center gap-2">
+            <CakeSlice className="w-6 h-6 text-primary" /> Au Boulanger 🥐
+          </h1>
+          <p className="text-muted-foreground text-sm">Vendez et découvrez des gâteaux faits maison.</p>
+        </div>
+
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="gradient-cobalt text-primary-foreground rounded-xl gap-2">
+              <Plus className="w-4 h-4" /> Publier un gâteau
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="font-display">Publier un gâteau</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-2">
+              {/* Photo upload */}
+              <label className="block cursor-pointer">
+                <div className="w-full h-48 rounded-xl border-2 border-dashed border-border flex items-center justify-center overflow-hidden bg-secondary/50 hover:bg-secondary transition-colors">
+                  {photoPreview ? (
+                    <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="text-center text-muted-foreground">
+                      <ImagePlus className="w-8 h-8 mx-auto mb-2" />
+                      <p className="text-sm">Cliquez pour ajouter une photo</p>
+                    </div>
+                  )}
+                </div>
+                <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+              </label>
+
+              <Input
+                placeholder="Nom du gâteau *"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="rounded-xl"
+              />
+              <Textarea
+                placeholder="Description (optionnelle)"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="rounded-xl min-h-[80px]"
+              />
+              <Input
+                type="number"
+                placeholder="Prix (€) *"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="rounded-xl"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  placeholder="Pays"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  className="rounded-xl"
+                />
+                <Input
+                  placeholder="Ville"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="rounded-xl"
+                />
+              </div>
+
+              <Button
+                onClick={handleSubmit}
+                disabled={uploading}
+                className="w-full gradient-cobalt text-primary-foreground rounded-xl py-3 h-auto font-semibold"
+              >
+                {uploading ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Publication...</>
+                ) : (
+                  "Publier"
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </motion.div>
 
-      <Tabs defaultValue="recettes" className="w-full">
-        <TabsList className="w-full grid grid-cols-2 rounded-xl">
-          <TabsTrigger value="recettes" className="rounded-lg">🍰 Recettes</TabsTrigger>
-          <TabsTrigger value="hamia" className="rounded-lg">✨ HamIA Pâtissière</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="recettes" className="mt-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {pastryRecipes.map((recipe, i) => (
-              <motion.button
-                key={recipe.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.06 }}
-                onClick={() => setSelectedRecipe(recipe)}
-                className="glass-card-solid rounded-2xl p-5 text-left hover:ring-2 hover:ring-primary/30 transition-all active:scale-[0.98]"
+      {/* Listings grid */}
+      {loading ? (
+        <p className="text-center text-muted-foreground py-12">Chargement...</p>
+      ) : listings.length === 0 ? (
+        <div className="text-center py-16 text-muted-foreground">
+          <p className="text-5xl mb-3">🎂</p>
+          <p className="font-display font-semibold">Aucun gâteau en vente pour le moment.</p>
+          <p className="text-sm mt-1">Soyez le premier à publier !</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {listings.map((listing, i) => (
+            <motion.div
+              key={listing.id}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.06 }}
+              className="glass-card-solid rounded-2xl overflow-hidden group"
+            >
+              <div
+                className="w-full h-48 overflow-hidden cursor-zoom-in"
+                onClick={() => setZoomedPhoto(listing.photo_url)}
               >
-                <div className="text-3xl mb-3">{recipe.image}</div>
-                <h3 className="font-display font-semibold text-sm mb-1">{recipe.name}</h3>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Clock className="w-3 h-3" /> {recipe.duration}
+                <img
+                  src={listing.photo_url}
+                  alt={listing.title}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-display font-semibold text-sm">{listing.title}</h3>
+                  <span className="text-primary font-bold text-lg">{listing.price} €</span>
                 </div>
-                <span className={`inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full font-medium ${difficultyColors[recipe.difficulty] || "bg-muted text-muted-foreground"}`}>
-                  {recipe.difficulty}
-                </span>
-              </motion.button>
-            ))}
-          </div>
-        </TabsContent>
+                {listing.description && (
+                  <p className="text-xs text-muted-foreground line-clamp-2">{listing.description}</p>
+                )}
+                {(listing.city || listing.country) && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    {[listing.city, listing.country].filter(Boolean).join(", ")}
+                  </p>
+                )}
+                {user && user.id === listing.user_id && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(listing.id)}
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10 text-xs mt-1"
+                  >
+                    <Trash2 className="w-3 h-3 mr-1" /> Supprimer
+                  </Button>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
-        <TabsContent value="hamia" className="mt-4">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card-solid rounded-2xl p-6 space-y-5">
-            <div className="flex items-center gap-4">
-              <img
-                src={hamiaAvatar}
-                alt="HamIA Pâtissière"
-                className="w-14 h-14 rounded-full ring-2 ring-primary/30 shadow-lg"
-              />
-              <div className="flex-1">
-                <h3 className="font-display font-bold text-lg flex items-center gap-2">
-                  HamIA Pâtissière
-                  <Sparkles className="w-4 h-4 text-primary" />
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Je crée un gâteau ou dessert avec les ingrédients de votre frigo !
-                </p>
-              </div>
-            </div>
-
-            {fridgeItems.length > 0 ? (
-              <div className="space-y-3">
-                <p className="text-xs text-muted-foreground">
-                  Ingrédients disponibles : <span className="font-medium text-foreground">{fridgeItems.join(", ")}</span>
-                </p>
-                <Button
-                  onClick={generatePastryFromFridge}
-                  disabled={aiLoading}
-                  className="w-full gradient-cobalt text-primary-foreground rounded-xl py-3 h-auto font-semibold"
-                >
-                  {aiLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      HamIA pâtisse...
-                    </>
-                  ) : (
-                    <>
-                      <CakeSlice className="w-4 h-4 mr-2" />
-                      Créer un dessert avec mes ingrédients
-                    </>
-                  )}
-                </Button>
-              </div>
-            ) : (
-              <div className="text-center py-6 text-muted-foreground">
-                <p className="text-3xl mb-2">🧊</p>
-                <p className="text-sm">Ajoutez des ingrédients dans <strong>Mon Frigo</strong> pour que HamIA vous propose un dessert !</p>
-              </div>
-            )}
-          </motion.div>
-        </TabsContent>
-      </Tabs>
+      {/* Zoom dialog */}
+      <Dialog open={!!zoomedPhoto} onOpenChange={() => setZoomedPhoto(null)}>
+        <DialogContent className="max-w-3xl p-2">
+          {zoomedPhoto && <img src={zoomedPhoto} alt="Zoom" className="w-full h-auto rounded-lg" />}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
