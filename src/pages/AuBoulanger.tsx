@@ -208,6 +208,9 @@ export default function AuBoulanger() {
         </Dialog>
       </motion.div>
 
+      {/* Seller orders dashboard */}
+      {user && <SellerOrders />}
+
       {/* Listings grid */}
       {loading ? (
         <p className="text-center text-muted-foreground py-12">Chargement...</p>
