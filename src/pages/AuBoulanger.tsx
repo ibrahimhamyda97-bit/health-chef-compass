@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { CakeOrderDialog } from "@/components/boulanger/CakeOrderDialog";
+import SellerOrders from "@/components/boulanger/SellerOrders";
 
 interface CakeListing {
   id: string;
@@ -206,6 +207,9 @@ export default function AuBoulanger() {
           </DialogContent>
         </Dialog>
       </motion.div>
+
+      {/* Seller orders dashboard */}
+      {user && <SellerOrders />}
 
       {/* Listings grid */}
       {loading ? (
