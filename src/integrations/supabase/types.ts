@@ -100,6 +100,71 @@ export type Database = {
           },
         ]
       }
+      chef_gallery_likes: {
+        Row: {
+          created_at: string
+          id: string
+          photo_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          photo_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          photo_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chef_gallery_likes_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "chef_gallery_photos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chef_gallery_photos: {
+        Row: {
+          before_photo_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          is_challenge: boolean
+          photo_url: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          before_photo_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_challenge?: boolean
+          photo_url: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          before_photo_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_challenge?: boolean
+          photo_url?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       event_cakes: {
         Row: {
           available: boolean
