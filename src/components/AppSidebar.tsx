@@ -74,7 +74,7 @@ export function AppSidebar() {
               <ChefHat className="w-5 h-5 text-accent-foreground" />
             </div>
             <div>
-              <span className="font-display font-bold text-base text-sidebar-accent-foreground leading-tight">NutriDash</span>
+              <span className="font-display font-bold text-base text-sidebar-accent-foreground leading-tight">Tableau de Board</span>
               <p className="text-[10px] text-sidebar-foreground/50 leading-tight">Menu intelligent</p>
             </div>
           </div>

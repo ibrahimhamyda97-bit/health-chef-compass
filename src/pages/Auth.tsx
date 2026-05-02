@@ -49,7 +49,7 @@ export default function Auth() {
           <div className="w-16 h-16 rounded-2xl gradient-emerald flex items-center justify-center mx-auto">
             <ChefHat className="w-8 h-8 text-accent-foreground" />
           </div>
-          <h1 className="text-3xl font-display font-bold text-foreground">NutriDash</h1>
+          <h1 className="text-3xl font-display font-bold text-foreground">Tableau de Board</h1>
           <p className="text-muted-foreground">
             {isLogin ? "Connectez-vous à votre compte" : "Créez votre compte"}
           </p>
