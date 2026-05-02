@@ -4,6 +4,7 @@ import TechniqueCourses from "@/components/plating/TechniqueCourses";
 import UtensilsEncyclopedia from "@/components/plating/UtensilsEncyclopedia";
 import GoldenRules from "@/components/plating/GoldenRules";
 import PlatingSimulator from "@/components/plating/PlatingSimulator";
+import ChefsGallery from "@/components/plating/ChefsGallery";
 
 export default function PlatingArt() {
   return (
