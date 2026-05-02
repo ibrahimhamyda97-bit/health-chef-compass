@@ -148,7 +148,7 @@ export default function ShoppingList() {
       .filter(Boolean)
       .join("\n\n");
 
-    const fullText = `🛒 Ma Liste de Courses - NutriDash\n\n${text}\n\n${unchecked.length} article(s) restant(s)`;
+    const fullText = `🛒 Ma Liste de Courses - Tableau de Board\n\n${text}\n\n${unchecked.length} article(s) restant(s)`;
 
     if (navigator.share) {
       try {

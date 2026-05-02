@@ -323,7 +323,7 @@ export default function Admin() {
           <h1 className="text-2xl font-display font-bold flex items-center gap-2">
             <ShieldCheck className="w-6 h-6 text-primary" /> Administration
           </h1>
-          <p className="text-muted-foreground text-sm">Tableau de bord de gestion NutriDash</p>
+          <p className="text-muted-foreground text-sm">Tableau de bord de gestion Tableau de Board</p>
         </div>
         <div className="flex gap-2">
           <Badge variant="secondary" className="text-xs">v2.0</Badge>
