@@ -31,6 +31,9 @@ export default function PlatingArt() {
 
       {/* Interactive Plating Simulator */}
       <PlatingSimulator />
+
+      {/* Chefs Gallery (community) */}
+      <ChefsGallery />
     </div>
   );
 }
