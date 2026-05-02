@@ -3,6 +3,7 @@ import PlatingGallery from "@/components/plating/PlatingGallery";
 import TechniqueCourses from "@/components/plating/TechniqueCourses";
 import UtensilsEncyclopedia from "@/components/plating/UtensilsEncyclopedia";
 import GoldenRules from "@/components/plating/GoldenRules";
+import PlatingSimulator from "@/components/plating/PlatingSimulator";
 
 export default function PlatingArt() {
   return (
@@ -26,6 +27,9 @@ export default function PlatingArt() {
 
       {/* Golden Rules */}
       <GoldenRules />
+
+      {/* Interactive Plating Simulator */}
+      <PlatingSimulator />
     </div>
   );
 }
