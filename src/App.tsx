@@ -16,6 +16,7 @@ import ShoppingList from "@/pages/ShoppingList";
 import Planning from "@/pages/Planning";
 import Admin from "@/pages/Admin";
 import PlatingArt from "@/pages/PlatingArt";
+import HealthScan from "@/pages/HealthScan";
 import PastryCourses from "@/pages/PastryCourses";
 import Auth from "@/pages/Auth";
 import NotFound from "./pages/NotFound.tsx";
@@ -42,6 +43,7 @@ const App = () => (
                 <Route path="/favoris" element={<Favorites />} />
                 <Route path="/planning" element={<Planning />} />
                 <Route path="/dressage" element={<PlatingArt />} />
+                <Route path="/scan-sante" element={<HealthScan />} />
                 <Route path="/cours-patisserie" element={<PastryCourses />} />
                 <Route path="/admin" element={<Admin />} />
               </Route>
