@@ -1,1 +1,4 @@
 project_id = "rynyvfdowwewbqcsbsyx"
+
+[functions.health-scan]
+verify_jwt = false
