@@ -154,15 +154,15 @@ export default function PlatingSimulator() {
               filter: "drop-shadow(0 40px 50px rgba(0,0,0,0.65)) drop-shadow(0 10px 20px rgba(0,0,0,0.4))",
             }}
           >
-            {/* Realistic ceramic plate */}
-            <img
-              src={plateImg}
-              alt=""
-              draggable={false}
-              className="absolute inset-0 w-full h-full pointer-events-none"
+            {/* Pure white ceramic plate */}
+            <div
+              className="absolute inset-0 rounded-full pointer-events-none"
               style={{
-                objectFit: "contain",
-                filter: "brightness(1.02) contrast(1.02)",
+                background:
+                  "radial-gradient(circle at 35% 30%, #ffffff 0%, #fafafa 55%, #ececec 85%, #d8d8d8 100%)",
+                border: "1px solid rgba(0,0,0,0.06)",
+                boxShadow:
+                  "inset 0 0 0 14px #ffffff, inset 0 0 0 15px rgba(0,0,0,0.05)",
               }}
             />
             {/* Subtle highlight overlay for ceramic feel */}
