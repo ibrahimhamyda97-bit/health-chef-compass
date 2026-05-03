@@ -344,6 +344,7 @@ export default function ChefsGallery() {
                       Partager
                     </button>
                   </div>
+                  <PhotoComments photoId={p.id} />
                 </div>
               </motion.div>
             );
