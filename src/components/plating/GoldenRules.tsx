@@ -439,6 +439,41 @@ export default function GoldenRules() {
         <p className="text-sm" style={{ color: "rgba(248, 249, 250, 0.6)" }}>
           Cliquez sur chaque règle pour ouvrir son cours et valider votre quiz.
         </p>
+
+        {/* Voice control */}
+        <div className="mt-5 flex items-center justify-center gap-3">
+          <button
+            onClick={toggleListening}
+            className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all"
+            style={{
+              background: listening
+                ? "rgba(212, 175, 55, 0.18)"
+                : "rgba(0,0,0,0.4)",
+              border: `1px solid ${listening ? GOLD : "rgba(212,175,55,0.3)"}`,
+              color: listening ? GOLD : OFF_WHITE,
+            }}
+            aria-pressed={listening}
+            aria-label={listening ? "Désactiver l'assistance vocale" : "Activer l'assistance vocale"}
+          >
+            {listening ? (
+              <>
+                <span className="relative flex w-3 h-3 items-center justify-center">
+                  <span
+                    className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping"
+                    style={{ background: GOLD }}
+                  />
+                  <Mic className="w-3 h-3 relative" style={{ color: GOLD }} />
+                </span>
+                Écoute… dites « Suivant » ou « Précédent »
+              </>
+            ) : (
+              <>
+                <MicOff className="w-3.5 h-3.5" />
+                Activer la navigation vocale
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Progress bar */}
