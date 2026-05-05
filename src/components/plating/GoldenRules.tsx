@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
@@ -11,7 +11,10 @@ import {
   XCircle,
   RotateCcw,
   Trophy,
+  Mic,
+  MicOff,
 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import ruleCleanliness from "@/assets/rule-cleanliness.jpg";
 import ruleColors from "@/assets/rule-colors.jpg";
 import ruleVolume from "@/assets/rule-volume.jpg";
