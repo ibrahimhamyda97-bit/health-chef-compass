@@ -2,18 +2,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 
-// Prevent service worker in iframes & preview hosts
-const isInIframe = (() => {
-  try {
-    return window.self !== window.top;
-  } catch {
-    return true;
-  }
-})();
+// (service worker cleanup runs unconditionally below)
 
-const isPreviewHost =
-  window.location.hostname.includes("id-preview--") ||
-  window.location.hostname.includes("lovableproject.com");
 
 // Unregister any stale service workers and clear caches everywhere.
 // A previous version of the app registered a SW that kept serving outdated
