@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
@@ -11,7 +11,10 @@ import {
   XCircle,
   RotateCcw,
   Trophy,
+  Mic,
+  MicOff,
 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import ruleCleanliness from "@/assets/rule-cleanliness.jpg";
 import ruleColors from "@/assets/rule-colors.jpg";
 import ruleVolume from "@/assets/rule-volume.jpg";
@@ -330,6 +333,13 @@ function QuizModule({
 export default function GoldenRules() {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const [validated, setValidated] = useState<Set<number>>(new Set());
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const openIdxRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    openIdxRef.current = openIdx;
+  }, [openIdx]);
 
   const progress = (validated.size / rules.length) * 100;
   const allDone = validated.size === rules.length;
@@ -341,6 +351,59 @@ export default function GoldenRules() {
       return next;
     });
   }
+
+  function handleVoiceCommand(transcript: string) {
+    const t = transcript.toLowerCase().trim();
+    const current = openIdxRef.current;
+    if (/\b(suivant|next|prochain)\b/.test(t)) {
+      const nextIdx = current === null ? 0 : Math.min(current + 1, rules.length - 1);
+      setOpenIdx(nextIdx);
+    } else if (/\b(précédent|precedent|previous|retour)\b/.test(t)) {
+      const prevIdx = current === null ? 0 : Math.max(current - 1, 0);
+      setOpenIdx(prevIdx);
+    } else if (/\b(fermer|close|stop)\b/.test(t)) {
+      setOpenIdx(null);
+    }
+  }
+
+  function toggleListening() {
+    const SR =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+    if (!SR) {
+      toast({
+        title: "Non disponible",
+        description: "La reconnaissance vocale n'est pas supportée par ce navigateur.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (listening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    const rec = new SR();
+    rec.lang = "fr-FR";
+    rec.continuous = true;
+    rec.interimResults = false;
+    rec.onresult = (e: any) => {
+      const last = e.results[e.results.length - 1];
+      if (last.isFinal) handleVoiceCommand(last[0].transcript);
+    };
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    rec.start();
+    recognitionRef.current = rec;
+    setListening(true);
+    toast({
+      title: "Écoute activée",
+      description: "Dites « Suivant » ou « Précédent » pour naviguer.",
+    });
+  }
+
+  useEffect(() => {
+    return () => recognitionRef.current?.stop();
+  }, []);
 
   return (
     <motion.section
@@ -376,6 +439,41 @@ export default function GoldenRules() {
         <p className="text-sm" style={{ color: "rgba(248, 249, 250, 0.6)" }}>
           Cliquez sur chaque règle pour ouvrir son cours et valider votre quiz.
         </p>
+
+        {/* Voice control */}
+        <div className="mt-5 flex items-center justify-center gap-3">
+          <button
+            onClick={toggleListening}
+            className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all"
+            style={{
+              background: listening
+                ? "rgba(212, 175, 55, 0.18)"
+                : "rgba(0,0,0,0.4)",
+              border: `1px solid ${listening ? GOLD : "rgba(212,175,55,0.3)"}`,
+              color: listening ? GOLD : OFF_WHITE,
+            }}
+            aria-pressed={listening}
+            aria-label={listening ? "Désactiver l'assistance vocale" : "Activer l'assistance vocale"}
+          >
+            {listening ? (
+              <>
+                <span className="relative flex w-3 h-3 items-center justify-center">
+                  <span
+                    className="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping"
+                    style={{ background: GOLD }}
+                  />
+                  <Mic className="w-3 h-3 relative" style={{ color: GOLD }} />
+                </span>
+                Écoute… dites « Suivant » ou « Précédent »
+              </>
+            ) : (
+              <>
+                <MicOff className="w-3.5 h-3.5" />
+                Activer la navigation vocale
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Progress bar */}
