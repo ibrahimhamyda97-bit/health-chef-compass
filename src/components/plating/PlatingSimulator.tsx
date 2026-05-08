@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { type CSSProperties, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Lightbulb, RotateCcw, Sparkles, Minus, Plus, X } from "lucide-react";
 import foodSprite from "@/assets/plating/food-sprite.png";
@@ -78,7 +78,7 @@ const CATEGORIES: Tool["category"][] = ["Protéines", "Féculents", "Légumes", 
 const SPRITE_COLS = 7;
 const SPRITE_ROWS = 7;
 
-function foodSpriteStyle(tool: Tool): React.CSSProperties {
+function foodSpriteStyle(tool: Tool): CSSProperties {
   const [row, col] = tool.sprite;
   return {
     backgroundImage: `url(${foodSprite})`,
