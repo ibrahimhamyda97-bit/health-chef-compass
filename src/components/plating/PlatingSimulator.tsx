@@ -285,22 +285,11 @@ export default function PlatingSimulator() {
                   transition={{ type: "spring", stiffness: 380, damping: 22 }}
                   title={`${tool.label} — molette pour redimensionner, double-clic pour retirer`}
                 >
-                  {tool.img ? (
-                    <img
-                      src={tool.img}
-                      alt={tool.label}
-                      draggable={false}
-                      className="w-full h-full pointer-events-none"
-                      style={{ objectFit: "contain" }}
-                    />
-                  ) : (
-                    <span
-                      className="pointer-events-none"
-                      style={{ fontSize: renderedSize * 0.78, lineHeight: 1 }}
-                    >
-                      {tool.emoji}
-                    </span>
-                  )}
+                  <span
+                    aria-label={tool.label}
+                    className="block w-full h-full pointer-events-none"
+                    style={foodSpriteStyle(tool)}
+                  />
                 </motion.div>
               );
             })}
@@ -393,11 +382,7 @@ export default function PlatingSimulator() {
                     border: "1.5px solid rgba(255,255,255,0.25)",
                   }}
                 >
-                  {t.img ? (
-                    <img src={t.img} alt="" className="w-9 h-9" style={{ objectFit: "contain" }} draggable={false} />
-                  ) : (
-                    <span style={{ fontSize: 24, lineHeight: 1 }}>{t.emoji}</span>
-                  )}
+                  <span aria-hidden className="block w-10 h-10" style={foodSpriteStyle(t)} />
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold truncate">{t.label}</span>
