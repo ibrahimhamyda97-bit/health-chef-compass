@@ -1,10 +1,7 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Lightbulb, RotateCcw, Sparkles, Minus, Plus, X } from "lucide-react";
-import meatImg from "@/assets/plating/meat.png";
-import pureeImg from "@/assets/plating/puree.png";
-import greensImg from "@/assets/plating/greens.png";
-import sauceImg from "@/assets/plating/sauce.png";
+import foodSprite from "@/assets/plating/food-sprite.png";
 
 const GOLD = "hsl(45, 65%, 52%)";
 const OFF_WHITE = "#F8F9FA";
@@ -16,29 +13,28 @@ interface Tool {
   label: string;
   hint: string;
   size: number;
-  img?: string;
-  emoji?: string;
+  sprite: [number, number];
   category: "Protéines" | "Féculents" | "Légumes" | "Sauces" | "Finitions" | "Fruits" | "Premium";
 }
 
 const TOOLS: Tool[] = [
   // Protéines
-  { kind: "meat", label: "Pièce de viande", hint: "Bœuf grillé", size: 130, img: meatImg, category: "Protéines" },
-  { kind: "chicken", label: "Poulet rôti", hint: "Volaille dorée", size: 120, emoji: "🍗", category: "Protéines" },
-  { kind: "salmon", label: "Pavé de saumon", hint: "Poisson noble", size: 120, emoji: "🐟", category: "Protéines" },
-  { kind: "shrimp", label: "Crevettes", hint: "Fruits de mer", size: 90, emoji: "🦐", category: "Protéines" },
-  { kind: "egg", label: "Œuf poché", hint: "Jaune coulant", size: 95, emoji: "🍳", category: "Protéines" },
-  { kind: "tofu", label: "Tofu grillé", hint: "Option végé", size: 100, emoji: "🧈", category: "Protéines" },
-  { kind: "steak", label: "Filet de bœuf", hint: "Tendre & rosé", size: 125, emoji: "🥩", category: "Protéines" },
-  { kind: "bacon", label: "Bacon croustillant", hint: "Touche fumée", size: 95, emoji: "🥓", category: "Protéines" },
+  { kind: "meat", label: "Pièce de viande", hint: "Bœuf grillé", size: 130, sprite: [0, 0], category: "Protéines" },
+  { kind: "chicken", label: "Poulet rôti", hint: "Volaille dorée", size: 120, sprite: [0, 1], category: "Protéines" },
+  { kind: "salmon", label: "Pavé de saumon", hint: "Poisson noble", size: 120, sprite: [0, 2], category: "Protéines" },
+  { kind: "shrimp", label: "Crevettes", hint: "Fruits de mer", size: 90, sprite: [0, 3], category: "Protéines" },
+  { kind: "egg", label: "Œuf poché", hint: "Jaune coulant", size: 95, sprite: [0, 4], category: "Protéines" },
+  { kind: "tofu", label: "Tofu grillé", hint: "Option végé", size: 100, sprite: [0, 5], category: "Protéines" },
+  { kind: "steak", label: "Filet de bœuf", hint: "Tendre & rosé", size: 125, sprite: [0, 6], category: "Protéines" },
+  { kind: "bacon", label: "Bacon croustillant", hint: "Touche fumée", size: 95, sprite: [1, 0], category: "Protéines" },
 
   // Féculents
-  { kind: "puree", label: "Quenelle de purée", hint: "Base crémeuse", size: 110, img: pureeImg, category: "Féculents" },
-  { kind: "rice", label: "Riz basmati", hint: "Grains parfumés", size: 105, emoji: "🍚", category: "Féculents" },
-  { kind: "pasta", label: "Pâtes fraîches", hint: "Tagliatelles", size: 110, emoji: "🍝", category: "Féculents" },
-  { kind: "potato", label: "Pomme de terre", hint: "Rôtie au four", size: 100, emoji: "🥔", category: "Féculents" },
-  { kind: "quinoa", label: "Quinoa", hint: "Sans gluten", size: 95, emoji: "🌾", category: "Féculents" },
-  { kind: "bread", label: "Pain de campagne", hint: "Croûte dorée", size: 100, emoji: "🥖", category: "Féculents" },
+  { kind: "puree", label: "Quenelle de purée", hint: "Base crémeuse", size: 110, sprite: [1, 1], category: "Féculents" },
+  { kind: "rice", label: "Riz basmati", hint: "Grains parfumés", size: 105, sprite: [2, 2], category: "Féculents" },
+  { kind: "pasta", label: "Pâtes fraîches", hint: "Tagliatelles", size: 110, sprite: [2, 2], category: "Féculents" },
+  { kind: "potato", label: "Pomme de terre", hint: "Rôtie au four", size: 100, sprite: [2, 4], category: "Féculents" },
+  { kind: "quinoa", label: "Quinoa", hint: "Sans gluten", size: 95, sprite: [2, 5], category: "Féculents" },
+  { kind: "bread", label: "Pain de campagne", hint: "Croûte dorée", size: 100, sprite: [2, 6], category: "Féculents" },
 
   // Légumes
   { kind: "asparagus", label: "Asperges vertes", hint: "Élégance", size: 130, emoji: "🥬", category: "Légumes" },
