@@ -1,37 +1,91 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Lightbulb, RotateCcw, Sparkles } from "lucide-react";
+import { CheckCircle2, Lightbulb, RotateCcw, Sparkles, Minus, Plus, X } from "lucide-react";
 import meatImg from "@/assets/plating/meat.png";
 import pureeImg from "@/assets/plating/puree.png";
 import greensImg from "@/assets/plating/greens.png";
 import sauceImg from "@/assets/plating/sauce.png";
-import plateImg from "@/assets/plating/plate.png";
 
 const GOLD = "hsl(45, 65%, 52%)";
 const OFF_WHITE = "#F8F9FA";
 
-type ToolKind = "meat" | "puree" | "greens" | "sauce";
+type ToolKind = string;
 
 interface Tool {
   kind: ToolKind;
   label: string;
   hint: string;
   size: number;
-  img: string;
+  img?: string;
+  emoji?: string;
+  category: "Protéines" | "Féculents" | "Légumes" | "Sauces" | "Finitions" | "Fruits" | "Premium";
 }
 
 const TOOLS: Tool[] = [
-  { kind: "meat", label: "Pièce de viande", hint: "L'élément principal", size: 130, img: meatImg },
-  { kind: "puree", label: "Quenelle de purée", hint: "La base crémeuse", size: 110, img: pureeImg },
-  { kind: "sauce", label: "Trait de sauce", hint: "Le liant aromatique", size: 140, img: sauceImg },
-  { kind: "greens", label: "Micro-pousses", hint: "La touche finale", size: 75, img: greensImg },
+  // Protéines
+  { kind: "meat", label: "Pièce de viande", hint: "Bœuf grillé", size: 130, img: meatImg, category: "Protéines" },
+  { kind: "chicken", label: "Poulet rôti", hint: "Volaille dorée", size: 120, emoji: "🍗", category: "Protéines" },
+  { kind: "salmon", label: "Pavé de saumon", hint: "Poisson noble", size: 120, emoji: "🐟", category: "Protéines" },
+  { kind: "shrimp", label: "Crevettes", hint: "Fruits de mer", size: 90, emoji: "🦐", category: "Protéines" },
+  { kind: "egg", label: "Œuf poché", hint: "Jaune coulant", size: 95, emoji: "🍳", category: "Protéines" },
+  { kind: "tofu", label: "Tofu grillé", hint: "Option végé", size: 100, emoji: "🧈", category: "Protéines" },
+  { kind: "steak", label: "Filet de bœuf", hint: "Tendre & rosé", size: 125, emoji: "🥩", category: "Protéines" },
+  { kind: "bacon", label: "Bacon croustillant", hint: "Touche fumée", size: 95, emoji: "🥓", category: "Protéines" },
+
+  // Féculents
+  { kind: "puree", label: "Quenelle de purée", hint: "Base crémeuse", size: 110, img: pureeImg, category: "Féculents" },
+  { kind: "rice", label: "Riz basmati", hint: "Grains parfumés", size: 105, emoji: "🍚", category: "Féculents" },
+  { kind: "pasta", label: "Pâtes fraîches", hint: "Tagliatelles", size: 110, emoji: "🍝", category: "Féculents" },
+  { kind: "potato", label: "Pomme de terre", hint: "Rôtie au four", size: 100, emoji: "🥔", category: "Féculents" },
+  { kind: "quinoa", label: "Quinoa", hint: "Sans gluten", size: 95, emoji: "🌾", category: "Féculents" },
+  { kind: "bread", label: "Pain de campagne", hint: "Croûte dorée", size: 100, emoji: "🥖", category: "Féculents" },
+
+  // Légumes
+  { kind: "asparagus", label: "Asperges vertes", hint: "Élégance", size: 130, emoji: "🥬", category: "Légumes" },
+  { kind: "carrot", label: "Carotte glacée", hint: "Sucrée & brillante", size: 95, emoji: "🥕", category: "Légumes" },
+  { kind: "broccoli", label: "Brocoli", hint: "Croquant vert", size: 95, emoji: "🥦", category: "Légumes" },
+  { kind: "tomato", label: "Tomate cerise", hint: "Acidulée", size: 70, emoji: "🍅", category: "Légumes" },
+  { kind: "mushroom", label: "Champignons", hint: "Umami terrien", size: 90, emoji: "🍄", category: "Légumes" },
+  { kind: "zucchini", label: "Courgette", hint: "Lamelles fines", size: 95, emoji: "🥒", category: "Légumes" },
+  { kind: "beet", label: "Betterave", hint: "Rouge profond", size: 95, emoji: "🟣", category: "Légumes" },
+  { kind: "corn", label: "Maïs grillé", hint: "Doux & sucré", size: 100, emoji: "🌽", category: "Légumes" },
+  { kind: "avocado", label: "Avocat", hint: "Crémeux vert", size: 100, emoji: "🥑", category: "Légumes" },
+
+  // Sauces
+  { kind: "sauce", label: "Trait de sauce", hint: "Liant aromatique", size: 140, img: sauceImg, category: "Sauces" },
+  { kind: "pesto", label: "Pesto", hint: "Vert basilic", size: 100, emoji: "🟢", category: "Sauces" },
+  { kind: "berry-coulis", label: "Coulis de fruits", hint: "Touche sucrée", size: 110, emoji: "🔴", category: "Sauces" },
+  { kind: "balsamic", label: "Réduction balsamique", hint: "Sirupeux", size: 110, emoji: "⚫", category: "Sauces" },
+
+  // Finitions
+  { kind: "greens", label: "Micro-pousses", hint: "Touche finale", size: 75, img: greensImg, category: "Finitions" },
+  { kind: "herbs", label: "Herbes fraîches", hint: "Persil, ciboulette", size: 70, emoji: "🌿", category: "Finitions" },
+  { kind: "edible-flower", label: "Fleur comestible", hint: "Élégance suprême", size: 65, emoji: "🌸", category: "Finitions" },
+  { kind: "lemon", label: "Zeste de citron", hint: "Fraîcheur", size: 70, emoji: "🍋", category: "Finitions" },
+  { kind: "sesame", label: "Graines de sésame", hint: "Croquant fin", size: 60, emoji: "⚪", category: "Finitions" },
+  { kind: "pepper", label: "Poivre concassé", hint: "Mouture fraîche", size: 60, emoji: "⚫", category: "Finitions" },
+
+  // Fruits
+  { kind: "raspberry", label: "Framboises", hint: "Note fruitée", size: 75, emoji: "🍓", category: "Fruits" },
+  { kind: "fig", label: "Figue", hint: "Sucré & charnu", size: 90, emoji: "🟪", category: "Fruits" },
+  { kind: "grape", label: "Raisin", hint: "Grappes brillantes", size: 85, emoji: "🍇", category: "Fruits" },
+  { kind: "orange", label: "Suprême d'orange", hint: "Acidité solaire", size: 85, emoji: "🍊", category: "Fruits" },
+
+  // Premium
+  { kind: "caviar", label: "Caviar", hint: "Luxe iodé", size: 80, emoji: "⚫", category: "Premium" },
+  { kind: "truffle", label: "Truffe noire", hint: "Râpée minute", size: 70, emoji: "🟤", category: "Premium" },
+  { kind: "foie-gras", label: "Foie gras", hint: "Fondant", size: 105, emoji: "🟫", category: "Premium" },
+  { kind: "gold-leaf", label: "Feuille d'or", hint: "Touche royale", size: 70, emoji: "✨", category: "Premium" },
 ];
+
+const CATEGORIES: Tool["category"][] = ["Protéines", "Féculents", "Légumes", "Sauces", "Finitions", "Fruits", "Premium"];
 
 interface Placed {
   id: string;
   kind: ToolKind;
   x: number;
   y: number;
+  scale: number;
 }
 
 const PLATE_SIZE = 380;
@@ -41,23 +95,34 @@ export default function PlatingSimulator() {
   const [placed, setPlaced] = useState<Placed[]>([]);
   const [feedback, setFeedback] = useState<{ ok: boolean; msg: string } | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [activeCat, setActiveCat] = useState<Tool["category"]>("Protéines");
   const plateRef = useRef<HTMLDivElement>(null);
 
   function addTool(kind: ToolKind) {
     setFeedback(null);
-    setPlaced((prev) => [
-      ...prev,
-      { id: `${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, kind, x: 0, y: 0 },
-    ]);
+    const id = `${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    setPlaced((prev) => [...prev, { id, kind, x: 0, y: 0, scale: 1 }]);
+    setSelectedId(id);
   }
 
   function removeTool(id: string) {
     setPlaced((prev) => prev.filter((p) => p.id !== id));
+    if (selectedId === id) setSelectedId(null);
   }
 
   function reset() {
     setPlaced([]);
     setFeedback(null);
+    setSelectedId(null);
+  }
+
+  function changeScale(id: string, delta: number) {
+    setPlaced((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, scale: Math.max(0.4, Math.min(2.5, p.scale + delta)) } : p
+      )
+    );
   }
 
   function onPointerMove(e: React.PointerEvent, id: string) {
@@ -70,6 +135,11 @@ export default function PlatingSimulator() {
     );
   }
 
+  function onWheel(e: React.WheelEvent, id: string) {
+    e.preventDefault();
+    changeScale(id, e.deltaY < 0 ? 0.08 : -0.08);
+  }
+
   function check() {
     if (placed.length === 0) {
       setFeedback({ ok: false, msg: "Commence par ajouter au moins un élément !" });
@@ -77,39 +147,26 @@ export default function PlatingSimulator() {
     }
     const inside = placed.filter((p) => Math.hypot(p.x, p.y) <= PLATE_RADIUS - 30);
     if (inside.length < placed.length) {
-      setFeedback({ ok: false, msg: "Certains éléments débordent de l'assiette — recadre-les vers le centre." });
+      setFeedback({ ok: false, msg: "Certains éléments débordent — recadre vers le centre." });
       return;
     }
-    const hasMeat = placed.some((p) => p.kind === "meat");
-    const hasPuree = placed.some((p) => p.kind === "puree");
-    const hasGreens = placed.some((p) => p.kind === "greens");
-    if (!hasMeat || !hasPuree) {
-      setFeedback({ ok: false, msg: "Compose un vrai dressage : pose au moins une base et une protéine." });
-      return;
-    }
-    if (!hasGreens) {
-      setFeedback({ ok: false, msg: "Il manque une touche finale — ajoute des micro-pousses !" });
+    if (placed.length < 3) {
+      setFeedback({ ok: false, msg: "Compose un vrai dressage avec au moins 3 éléments." });
       return;
     }
     const avgDist = placed.reduce((acc, p) => acc + Math.hypot(p.x, p.y), 0) / placed.length;
-    const minOk = PLATE_RADIUS * 0.15;
-    const maxOk = PLATE_RADIUS * 0.65;
-    if (avgDist < minOk) {
-      setFeedback({ ok: false, msg: "Tout est collé au centre. Pense à la règle des tiers pour aérer la composition." });
+    if (avgDist < PLATE_RADIUS * 0.1) {
+      setFeedback({ ok: false, msg: "Tout est collé au centre. Aère ta composition (règle des tiers)." });
       return;
     }
-    if (avgDist > maxOk) {
-      setFeedback({ ok: false, msg: "Les éléments sont trop dispersés vers les bords — recentre légèrement." });
-      return;
-    }
-    const meat = placed.find((p) => p.kind === "meat");
-    const greens = placed.find((p) => p.kind === "greens");
-    if (meat && greens && Math.hypot(meat.x - greens.x, meat.y - greens.y) > PLATE_RADIUS * 0.45) {
-      setFeedback({ ok: false, msg: "Pense à donner de la hauteur ! Pose les micro-pousses sur la viande pour empiler." });
+    if (avgDist > PLATE_RADIUS * 0.7) {
+      setFeedback({ ok: false, msg: "Trop dispersé vers les bords — recentre légèrement." });
       return;
     }
     setFeedback({ ok: true, msg: "Bravo, l'équilibre est parfait !" });
   }
+
+  const visibleTools = TOOLS.filter((t) => t.category === activeCat);
 
   return (
     <motion.section
@@ -138,34 +195,34 @@ export default function PlatingSimulator() {
           Simulateur de Dressage
         </h2>
         <p className="text-sm" style={{ color: "rgba(248, 249, 250, 0.6)" }}>
-          Glisse les ingrédients sur l'assiette en céramique, superpose-les, puis valide ta composition.
+          Glisse les ingrédients, agrandis-les avec la molette ou les boutons +/−, puis valide ta composition.
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-[1fr_240px] gap-8 items-start">
+      <div className="grid lg:grid-cols-[1fr_280px] gap-8 items-start">
         {/* Plate */}
         <div className="flex justify-center">
           <div
             ref={plateRef}
             className="relative shrink-0 select-none touch-none"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setSelectedId(null);
+            }}
             style={{
               width: PLATE_SIZE,
               height: PLATE_SIZE,
               filter: "drop-shadow(0 40px 50px rgba(0,0,0,0.65)) drop-shadow(0 10px 20px rgba(0,0,0,0.4))",
             }}
           >
-            {/* Pure white ceramic plate */}
             <div
               className="absolute inset-0 rounded-full pointer-events-none"
               style={{
                 background:
                   "radial-gradient(circle at 35% 30%, #ffffff 0%, #fafafa 55%, #ececec 85%, #d8d8d8 100%)",
                 border: "1px solid rgba(0,0,0,0.06)",
-                boxShadow:
-                  "inset 0 0 0 14px #ffffff, inset 0 0 0 15px rgba(0,0,0,0.05)",
+                boxShadow: "inset 0 0 0 14px #ffffff, inset 0 0 0 15px rgba(0,0,0,0.05)",
               }}
             />
-            {/* Subtle highlight overlay for ceramic feel */}
             <div
               className="absolute rounded-full pointer-events-none"
               style={{
@@ -178,52 +235,64 @@ export default function PlatingSimulator() {
 
             {placed.length === 0 && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <p className="text-xs italic text-neutral-500">Ajoute des ingrédients depuis la boîte à outils →</p>
+                <p className="text-xs italic text-neutral-500">Choisis une catégorie et ajoute des ingrédients →</p>
               </div>
             )}
 
             {placed.map((p, idx) => {
-              const tool = TOOLS.find((t) => t.kind === p.kind)!;
+              const tool = TOOLS.find((t) => t.kind === p.kind);
+              if (!tool) return null;
               const isDragging = draggingId === p.id;
+              const isSelected = selectedId === p.id;
+              const renderedSize = tool.size * p.scale;
               return (
                 <motion.div
                   key={p.id}
                   onPointerDown={(e) => {
                     (e.target as HTMLElement).setPointerCapture(e.pointerId);
                     setDraggingId(p.id);
+                    setSelectedId(p.id);
                   }}
                   onPointerMove={(e) => onPointerMove(e, p.id)}
                   onPointerUp={() => setDraggingId(null)}
+                  onWheel={(e) => onWheel(e, p.id)}
                   onDoubleClick={() => removeTool(p.id)}
-                  className="absolute cursor-grab active:cursor-grabbing"
+                  className="absolute cursor-grab active:cursor-grabbing flex items-center justify-center"
                   style={{
-                    width: tool.size,
-                    height: tool.size,
-                    left: `calc(50% + ${p.x}px - ${tool.size / 2}px)`,
-                    top: `calc(50% + ${p.y}px - ${tool.size / 2}px)`,
+                    width: renderedSize,
+                    height: renderedSize,
+                    left: `calc(50% + ${p.x}px - ${renderedSize / 2}px)`,
+                    top: `calc(50% + ${p.y}px - ${renderedSize / 2}px)`,
                     zIndex: isDragging ? 50 : 10 + idx,
                     filter: isDragging
-                      ? "drop-shadow(0 18px 22px rgba(0,0,0,0.55)) drop-shadow(0 6px 8px rgba(0,0,0,0.35))"
-                      : "drop-shadow(0 8px 10px rgba(0,0,0,0.45)) drop-shadow(0 3px 4px rgba(0,0,0,0.25))",
+                      ? "drop-shadow(0 18px 22px rgba(0,0,0,0.55))"
+                      : "drop-shadow(0 8px 10px rgba(0,0,0,0.45))",
+                    outline: isSelected ? `2px dashed ${GOLD}` : "none",
+                    outlineOffset: 4,
+                    borderRadius: "50%",
                   }}
                   initial={{ scale: 0, opacity: 0 }}
-                  animate={{
-                    scale: isDragging ? 1.12 : 1,
-                    opacity: 1,
-                    rotate: isDragging ? -2 : 0,
-                  }}
+                  animate={{ scale: isDragging ? 1.05 : 1, opacity: 1 }}
                   exit={{ scale: 0, opacity: 0 }}
                   transition={{ type: "spring", stiffness: 380, damping: 22 }}
-                  whileHover={{ scale: isDragging ? 1.12 : 1.05 }}
-                  title={`${tool.label} — double-clic pour retirer`}
+                  title={`${tool.label} — molette pour redimensionner, double-clic pour retirer`}
                 >
-                  <img
-                    src={tool.img}
-                    alt={tool.label}
-                    draggable={false}
-                    className="w-full h-full pointer-events-none"
-                    style={{ objectFit: "contain" }}
-                  />
+                  {tool.img ? (
+                    <img
+                      src={tool.img}
+                      alt={tool.label}
+                      draggable={false}
+                      className="w-full h-full pointer-events-none"
+                      style={{ objectFit: "contain" }}
+                    />
+                  ) : (
+                    <span
+                      className="pointer-events-none"
+                      style={{ fontSize: renderedSize * 0.78, lineHeight: 1 }}
+                    >
+                      {tool.emoji}
+                    </span>
+                  )}
                 </motion.div>
               );
             })}
@@ -241,8 +310,62 @@ export default function PlatingSimulator() {
           <p className="text-[11px] uppercase tracking-[0.18em] font-bold mb-3" style={{ color: GOLD }}>
             🧰 Boîte à outils
           </p>
-          <div className="space-y-2">
-            {TOOLS.map((t) => (
+
+          {/* Selected item controls */}
+          {selectedId && (
+            <div
+              className="mb-3 p-2.5 rounded-lg flex items-center justify-between gap-2"
+              style={{ background: "rgba(212,175,55,0.1)", border: "1px solid rgba(212,175,55,0.3)" }}
+            >
+              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: GOLD }}>
+                Taille
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => changeScale(selectedId, -0.15)}
+                  className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10"
+                  style={{ border: `1px solid ${GOLD}`, color: GOLD }}
+                >
+                  <Minus className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => changeScale(selectedId, 0.15)}
+                  className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10"
+                  style={{ border: `1px solid ${GOLD}`, color: GOLD }}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => removeTool(selectedId)}
+                  className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-red-500/20 ml-1"
+                  style={{ border: "1px solid rgba(239,68,68,0.5)", color: "#fca5a5" }}
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Category tabs */}
+          <div className="flex flex-wrap gap-1 mb-3">
+            {CATEGORIES.map((c) => (
+              <button
+                key={c}
+                onClick={() => setActiveCat(c)}
+                className="px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all"
+                style={{
+                  background: activeCat === c ? GOLD : "rgba(0,0,0,0.4)",
+                  color: activeCat === c ? "#1a1410" : OFF_WHITE,
+                  border: `1px solid ${activeCat === c ? GOLD : "rgba(212,175,55,0.2)"}`,
+                }}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
+            {visibleTools.map((t) => (
               <motion.button
                 key={t.kind}
                 onClick={() => addTool(t.kind)}
@@ -256,20 +379,17 @@ export default function PlatingSimulator() {
                 }}
               >
                 <span
-                  className="w-12 h-12 flex items-center justify-center rounded-full shrink-0 overflow-hidden"
+                  className="w-11 h-11 flex items-center justify-center rounded-full shrink-0 overflow-hidden"
                   style={{
                     background: "radial-gradient(circle at 35% 30%, #fafafa 0%, #d8d8d8 80%)",
                     border: "1.5px solid rgba(255,255,255,0.25)",
-                    filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.4))",
                   }}
                 >
-                  <img
-                    src={t.img}
-                    alt=""
-                    className="w-10 h-10"
-                    style={{ objectFit: "contain" }}
-                    draggable={false}
-                  />
+                  {t.img ? (
+                    <img src={t.img} alt="" className="w-9 h-9" style={{ objectFit: "contain" }} draggable={false} />
+                  ) : (
+                    <span style={{ fontSize: 24, lineHeight: 1 }}>{t.emoji}</span>
+                  )}
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold truncate">{t.label}</span>
@@ -279,7 +399,7 @@ export default function PlatingSimulator() {
             ))}
           </div>
           <p className="text-[10px] mt-3 italic opacity-50" style={{ color: OFF_WHITE }}>
-            Glisse les éléments. Double-clic pour retirer. Empile-les pour donner de la hauteur.
+            Molette = agrandir/réduire. Clic = sélectionner. Double-clic = retirer.
           </p>
         </div>
       </div>
