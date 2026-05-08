@@ -75,6 +75,18 @@ const TOOLS: Tool[] = [
 ];
 
 const CATEGORIES: Tool["category"][] = ["Protéines", "Féculents", "Légumes", "Sauces", "Finitions", "Fruits", "Premium"];
+const SPRITE_COLS = 7;
+const SPRITE_ROWS = 7;
+
+function foodSpriteStyle(tool: Tool): React.CSSProperties {
+  const [row, col] = tool.sprite;
+  return {
+    backgroundImage: `url(${foodSprite})`,
+    backgroundSize: `${SPRITE_COLS * 100}% ${SPRITE_ROWS * 100}%`,
+    backgroundPosition: `${(col / (SPRITE_COLS - 1)) * 100}% ${(row / (SPRITE_ROWS - 1)) * 100}%`,
+    backgroundRepeat: "no-repeat",
+  };
+}
 
 interface Placed {
   id: string;
