@@ -37,41 +37,41 @@ const TOOLS: Tool[] = [
   { kind: "bread", label: "Pain de campagne", hint: "Croûte dorée", size: 100, sprite: [2, 6], category: "Féculents" },
 
   // Légumes
-  { kind: "asparagus", label: "Asperges vertes", hint: "Élégance", size: 130, emoji: "🥬", category: "Légumes" },
-  { kind: "carrot", label: "Carotte glacée", hint: "Sucrée & brillante", size: 95, emoji: "🥕", category: "Légumes" },
-  { kind: "broccoli", label: "Brocoli", hint: "Croquant vert", size: 95, emoji: "🥦", category: "Légumes" },
-  { kind: "tomato", label: "Tomate cerise", hint: "Acidulée", size: 70, emoji: "🍅", category: "Légumes" },
-  { kind: "mushroom", label: "Champignons", hint: "Umami terrien", size: 90, emoji: "🍄", category: "Légumes" },
-  { kind: "zucchini", label: "Courgette", hint: "Lamelles fines", size: 95, emoji: "🥒", category: "Légumes" },
-  { kind: "beet", label: "Betterave", hint: "Rouge profond", size: 95, emoji: "🟣", category: "Légumes" },
-  { kind: "corn", label: "Maïs grillé", hint: "Doux & sucré", size: 100, emoji: "🌽", category: "Légumes" },
-  { kind: "avocado", label: "Avocat", hint: "Crémeux vert", size: 100, emoji: "🥑", category: "Légumes" },
+  { kind: "asparagus", label: "Asperges vertes", hint: "Élégance", size: 130, sprite: [3, 0], category: "Légumes" },
+  { kind: "carrot", label: "Radis croquant", hint: "Fraîcheur rosée", size: 95, sprite: [6, 6], category: "Légumes" },
+  { kind: "broccoli", label: "Brocoli", hint: "Croquant vert", size: 95, sprite: [2, 3], category: "Légumes" },
+  { kind: "tomato", label: "Tomate cerise", hint: "Acidulée", size: 70, sprite: [2, 3], category: "Légumes" },
+  { kind: "mushroom", label: "Champignons", hint: "Umami terrien", size: 90, sprite: [2, 4], category: "Légumes" },
+  { kind: "zucchini", label: "Courgette", hint: "Lamelles fines", size: 95, sprite: [3, 3], category: "Légumes" },
+  { kind: "beet", label: "Chou-fleur", hint: "Fleur blanche", size: 95, sprite: [6, 3], category: "Légumes" },
+  { kind: "corn", label: "Maïs grillé", hint: "Doux & sucré", size: 100, sprite: [3, 1], category: "Légumes" },
+  { kind: "avocado", label: "Crème verte", hint: "Onctueux", size: 100, sprite: [6, 4], category: "Légumes" },
 
   // Sauces
-  { kind: "sauce", label: "Trait de sauce", hint: "Liant aromatique", size: 140, img: sauceImg, category: "Sauces" },
-  { kind: "pesto", label: "Pesto", hint: "Vert basilic", size: 100, emoji: "🟢", category: "Sauces" },
-  { kind: "berry-coulis", label: "Coulis de fruits", hint: "Touche sucrée", size: 110, emoji: "🔴", category: "Sauces" },
-  { kind: "balsamic", label: "Réduction balsamique", hint: "Sirupeux", size: 110, emoji: "⚫", category: "Sauces" },
+  { kind: "sauce", label: "Trait de sauce", hint: "Liant aromatique", size: 140, sprite: [3, 2], category: "Sauces" },
+  { kind: "pesto", label: "Pesto", hint: "Vert basilic", size: 100, sprite: [6, 4], category: "Sauces" },
+  { kind: "berry-coulis", label: "Coulis de fruits", hint: "Touche sucrée", size: 110, sprite: [3, 5], category: "Sauces" },
+  { kind: "balsamic", label: "Réduction balsamique", hint: "Sirupeux", size: 110, sprite: [3, 2], category: "Sauces" },
 
   // Finitions
-  { kind: "greens", label: "Micro-pousses", hint: "Touche finale", size: 75, img: greensImg, category: "Finitions" },
-  { kind: "herbs", label: "Herbes fraîches", hint: "Persil, ciboulette", size: 70, emoji: "🌿", category: "Finitions" },
-  { kind: "edible-flower", label: "Fleur comestible", hint: "Élégance suprême", size: 65, emoji: "🌸", category: "Finitions" },
-  { kind: "lemon", label: "Zeste de citron", hint: "Fraîcheur", size: 70, emoji: "🍋", category: "Finitions" },
-  { kind: "sesame", label: "Graines de sésame", hint: "Croquant fin", size: 60, emoji: "⚪", category: "Finitions" },
-  { kind: "pepper", label: "Poivre concassé", hint: "Mouture fraîche", size: 60, emoji: "⚫", category: "Finitions" },
+  { kind: "greens", label: "Micro-pousses", hint: "Touche finale", size: 75, sprite: [3, 4], category: "Finitions" },
+  { kind: "herbs", label: "Herbes fraîches", hint: "Persil, ciboulette", size: 70, sprite: [3, 4], category: "Finitions" },
+  { kind: "edible-flower", label: "Radis fin", hint: "Élégance suprême", size: 65, sprite: [6, 6], category: "Finitions" },
+  { kind: "lemon", label: "Suprême d'orange", hint: "Fraîcheur", size: 70, sprite: [4, 1], category: "Finitions" },
+  { kind: "sesame", label: "Graines de sésame", hint: "Croquant fin", size: 60, sprite: [5, 3], category: "Finitions" },
+  { kind: "pepper", label: "Poivre concassé", hint: "Mouture fraîche", size: 60, sprite: [5, 3], category: "Finitions" },
 
   // Fruits
-  { kind: "raspberry", label: "Framboises", hint: "Note fruitée", size: 75, emoji: "🍓", category: "Fruits" },
-  { kind: "fig", label: "Figue", hint: "Sucré & charnu", size: 90, emoji: "🟪", category: "Fruits" },
-  { kind: "grape", label: "Raisin", hint: "Grappes brillantes", size: 85, emoji: "🍇", category: "Fruits" },
-  { kind: "orange", label: "Suprême d'orange", hint: "Acidité solaire", size: 85, emoji: "🍊", category: "Fruits" },
+  { kind: "raspberry", label: "Framboises", hint: "Note fruitée", size: 75, sprite: [3, 6], category: "Fruits" },
+  { kind: "fig", label: "Figue", hint: "Sucré & charnu", size: 90, sprite: [4, 0], category: "Fruits" },
+  { kind: "grape", label: "Raisin", hint: "Grappes brillantes", size: 85, sprite: [4, 0], category: "Fruits" },
+  { kind: "orange", label: "Suprême d'orange", hint: "Acidité solaire", size: 85, sprite: [4, 1], category: "Fruits" },
 
   // Premium
-  { kind: "caviar", label: "Caviar", hint: "Luxe iodé", size: 80, emoji: "⚫", category: "Premium" },
-  { kind: "truffle", label: "Truffe noire", hint: "Râpée minute", size: 70, emoji: "🟤", category: "Premium" },
-  { kind: "foie-gras", label: "Foie gras", hint: "Fondant", size: 105, emoji: "🟫", category: "Premium" },
-  { kind: "gold-leaf", label: "Feuille d'or", hint: "Touche royale", size: 70, emoji: "✨", category: "Premium" },
+  { kind: "caviar", label: "Caviar", hint: "Luxe iodé", size: 80, sprite: [4, 2], category: "Premium" },
+  { kind: "truffle", label: "Truffe noire", hint: "Râpée minute", size: 70, sprite: [4, 4], category: "Premium" },
+  { kind: "foie-gras", label: "Burrata", hint: "Fondant", size: 105, sprite: [6, 2], category: "Premium" },
+  { kind: "gold-leaf", label: "Feuille d'or", hint: "Touche royale", size: 70, sprite: [4, 5], category: "Premium" },
 ];
 
 const CATEGORIES: Tool["category"][] = ["Protéines", "Féculents", "Légumes", "Sauces", "Finitions", "Fruits", "Premium"];
