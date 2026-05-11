@@ -1,7 +1,33 @@
-import { type CSSProperties, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Lightbulb, RotateCcw, Sparkles, Minus, Plus, X } from "lucide-react";
-import foodSprite from "@/assets/plating/food-sprite.png";
+
+import beefImg from "@/assets/plating/foods/beef.png";
+import chickenImg from "@/assets/plating/foods/chicken.png";
+import salmonImg from "@/assets/plating/foods/salmon.png";
+import shrimpImg from "@/assets/plating/foods/shrimp.png";
+import eggImg from "@/assets/plating/foods/egg.png";
+import baconImg from "@/assets/plating/foods/bacon.png";
+import pureeImg from "@/assets/plating/foods/puree.png";
+import riceImg from "@/assets/plating/foods/rice.png";
+import pastaImg from "@/assets/plating/foods/pasta.png";
+import potatoImg from "@/assets/plating/foods/potato.png";
+import asparagusImg from "@/assets/plating/foods/asparagus.png";
+import tomatoImg from "@/assets/plating/foods/tomato.png";
+import broccoliImg from "@/assets/plating/foods/broccoli.png";
+import mushroomImg from "@/assets/plating/foods/mushroom.png";
+import radishImg from "@/assets/plating/foods/radish.png";
+import sauceImg from "@/assets/plating/foods/sauce.png";
+import pestoImg from "@/assets/plating/foods/pesto.png";
+import microgreensImg from "@/assets/plating/foods/microgreens.png";
+import flowerImg from "@/assets/plating/foods/flower.png";
+import lemonImg from "@/assets/plating/foods/lemon.png";
+import raspberryImg from "@/assets/plating/foods/raspberry.png";
+import figImg from "@/assets/plating/foods/fig.png";
+import caviarImg from "@/assets/plating/foods/caviar.png";
+import truffleImg from "@/assets/plating/foods/truffle.png";
+import burrataImg from "@/assets/plating/foods/burrata.png";
+import goldImg from "@/assets/plating/foods/gold.png";
 
 const GOLD = "hsl(45, 65%, 52%)";
 const OFF_WHITE = "#F8F9FA";
@@ -13,80 +39,53 @@ interface Tool {
   label: string;
   hint: string;
   size: number;
-  sprite: [number, number];
+  img: string;
   category: "Protéines" | "Féculents" | "Légumes" | "Sauces" | "Finitions" | "Fruits" | "Premium";
 }
 
 const TOOLS: Tool[] = [
   // Protéines
-  { kind: "meat", label: "Pièce de viande", hint: "Bœuf grillé", size: 130, sprite: [0, 0], category: "Protéines" },
-  { kind: "chicken", label: "Poulet rôti", hint: "Volaille dorée", size: 120, sprite: [0, 1], category: "Protéines" },
-  { kind: "salmon", label: "Pavé de saumon", hint: "Poisson noble", size: 120, sprite: [0, 2], category: "Protéines" },
-  { kind: "shrimp", label: "Crevettes", hint: "Fruits de mer", size: 90, sprite: [0, 3], category: "Protéines" },
-  { kind: "egg", label: "Œuf poché", hint: "Jaune coulant", size: 95, sprite: [0, 4], category: "Protéines" },
-  { kind: "tofu", label: "Tofu grillé", hint: "Option végé", size: 100, sprite: [0, 5], category: "Protéines" },
-  { kind: "steak", label: "Filet de bœuf", hint: "Tendre & rosé", size: 125, sprite: [0, 6], category: "Protéines" },
-  { kind: "bacon", label: "Bacon croustillant", hint: "Touche fumée", size: 95, sprite: [1, 0], category: "Protéines" },
+  { kind: "beef", label: "Pièce de bœuf grillé", hint: "Marquée au grill", size: 130, img: beefImg, category: "Protéines" },
+  { kind: "chicken", label: "Blanc de poulet rôti", hint: "Peau dorée", size: 125, img: chickenImg, category: "Protéines" },
+  { kind: "salmon", label: "Pavé de saumon", hint: "Poisson noble", size: 125, img: salmonImg, category: "Protéines" },
+  { kind: "shrimp", label: "Crevettes", hint: "Fruits de mer", size: 110, img: shrimpImg, category: "Protéines" },
+  { kind: "egg", label: "Œuf poché", hint: "Jaune coulant", size: 100, img: eggImg, category: "Protéines" },
+  { kind: "bacon", label: "Bacon croustillant", hint: "Touche fumée", size: 110, img: baconImg, category: "Protéines" },
 
   // Féculents
-  { kind: "puree", label: "Quenelle de purée", hint: "Base crémeuse", size: 110, sprite: [1, 1], category: "Féculents" },
-  { kind: "rice", label: "Riz basmati", hint: "Grains parfumés", size: 105, sprite: [2, 2], category: "Féculents" },
-  { kind: "pasta", label: "Pâtes fraîches", hint: "Tagliatelles", size: 110, sprite: [2, 2], category: "Féculents" },
-  { kind: "potato", label: "Pomme de terre", hint: "Rôtie au four", size: 100, sprite: [2, 4], category: "Féculents" },
-  { kind: "quinoa", label: "Quinoa", hint: "Sans gluten", size: 95, sprite: [2, 5], category: "Féculents" },
-  { kind: "bread", label: "Pain de campagne", hint: "Croûte dorée", size: 100, sprite: [2, 6], category: "Féculents" },
+  { kind: "puree", label: "Quenelle de purée", hint: "Base crémeuse", size: 110, img: pureeImg, category: "Féculents" },
+  { kind: "rice", label: "Riz basmati", hint: "Grains parfumés", size: 105, img: riceImg, category: "Féculents" },
+  { kind: "pasta", label: "Pâtes fraîches", hint: "Tagliatelles au nid", size: 115, img: pastaImg, category: "Féculents" },
+  { kind: "potato", label: "Pomme de terre rôtie", hint: "Croûte dorée", size: 105, img: potatoImg, category: "Féculents" },
 
   // Légumes
-  { kind: "asparagus", label: "Asperges vertes", hint: "Élégance", size: 130, sprite: [3, 0], category: "Légumes" },
-  { kind: "carrot", label: "Radis croquant", hint: "Fraîcheur rosée", size: 95, sprite: [6, 6], category: "Légumes" },
-  { kind: "broccoli", label: "Brocoli", hint: "Croquant vert", size: 95, sprite: [2, 3], category: "Légumes" },
-  { kind: "tomato", label: "Tomate cerise", hint: "Acidulée", size: 70, sprite: [2, 3], category: "Légumes" },
-  { kind: "mushroom", label: "Champignons", hint: "Umami terrien", size: 90, sprite: [2, 4], category: "Légumes" },
-  { kind: "zucchini", label: "Courgette", hint: "Lamelles fines", size: 95, sprite: [3, 3], category: "Légumes" },
-  { kind: "beet", label: "Chou-fleur", hint: "Fleur blanche", size: 95, sprite: [6, 3], category: "Légumes" },
-  { kind: "corn", label: "Maïs grillé", hint: "Doux & sucré", size: 100, sprite: [3, 1], category: "Légumes" },
-  { kind: "avocado", label: "Crème verte", hint: "Onctueux", size: 100, sprite: [6, 4], category: "Légumes" },
+  { kind: "asparagus", label: "Asperges vertes", hint: "Élégance", size: 130, img: asparagusImg, category: "Légumes" },
+  { kind: "tomato", label: "Tomates cerises", hint: "Acidulées", size: 95, img: tomatoImg, category: "Légumes" },
+  { kind: "broccoli", label: "Brocoli", hint: "Croquant vert", size: 105, img: broccoliImg, category: "Légumes" },
+  { kind: "mushroom", label: "Champignons", hint: "Umami terrien", size: 105, img: mushroomImg, category: "Légumes" },
+  { kind: "radish", label: "Radis tranché", hint: "Fraîcheur rosée", size: 85, img: radishImg, category: "Légumes" },
 
   // Sauces
-  { kind: "sauce", label: "Trait de sauce", hint: "Liant aromatique", size: 140, sprite: [3, 2], category: "Sauces" },
-  { kind: "pesto", label: "Pesto", hint: "Vert basilic", size: 100, sprite: [6, 4], category: "Sauces" },
-  { kind: "berry-coulis", label: "Coulis de fruits", hint: "Touche sucrée", size: 110, sprite: [3, 5], category: "Sauces" },
-  { kind: "balsamic", label: "Réduction balsamique", hint: "Sirupeux", size: 110, sprite: [3, 2], category: "Sauces" },
+  { kind: "sauce", label: "Trait de sauce", hint: "Liant aromatique", size: 140, img: sauceImg, category: "Sauces" },
+  { kind: "pesto", label: "Pesto", hint: "Vert basilic", size: 95, img: pestoImg, category: "Sauces" },
 
   // Finitions
-  { kind: "greens", label: "Micro-pousses", hint: "Touche finale", size: 75, sprite: [3, 4], category: "Finitions" },
-  { kind: "herbs", label: "Herbes fraîches", hint: "Persil, ciboulette", size: 70, sprite: [3, 4], category: "Finitions" },
-  { kind: "edible-flower", label: "Radis fin", hint: "Élégance suprême", size: 65, sprite: [6, 6], category: "Finitions" },
-  { kind: "lemon", label: "Suprême d'orange", hint: "Fraîcheur", size: 70, sprite: [4, 1], category: "Finitions" },
-  { kind: "sesame", label: "Graines de sésame", hint: "Croquant fin", size: 60, sprite: [5, 3], category: "Finitions" },
-  { kind: "pepper", label: "Poivre concassé", hint: "Mouture fraîche", size: 60, sprite: [5, 3], category: "Finitions" },
+  { kind: "microgreens", label: "Micro-pousses", hint: "Touche finale", size: 80, img: microgreensImg, category: "Finitions" },
+  { kind: "flower", label: "Fleur comestible", hint: "Élégance suprême", size: 75, img: flowerImg, category: "Finitions" },
+  { kind: "lemon", label: "Tranche de citron", hint: "Fraîcheur acidulée", size: 80, img: lemonImg, category: "Finitions" },
 
   // Fruits
-  { kind: "raspberry", label: "Framboises", hint: "Note fruitée", size: 75, sprite: [3, 6], category: "Fruits" },
-  { kind: "fig", label: "Figue", hint: "Sucré & charnu", size: 90, sprite: [4, 0], category: "Fruits" },
-  { kind: "grape", label: "Raisin", hint: "Grappes brillantes", size: 85, sprite: [4, 0], category: "Fruits" },
-  { kind: "orange", label: "Suprême d'orange", hint: "Acidité solaire", size: 85, sprite: [4, 1], category: "Fruits" },
+  { kind: "raspberry", label: "Framboises", hint: "Note fruitée", size: 90, img: raspberryImg, category: "Fruits" },
+  { kind: "fig", label: "Figue", hint: "Sucré & charnu", size: 95, img: figImg, category: "Fruits" },
 
   // Premium
-  { kind: "caviar", label: "Caviar", hint: "Luxe iodé", size: 80, sprite: [4, 2], category: "Premium" },
-  { kind: "truffle", label: "Truffe noire", hint: "Râpée minute", size: 70, sprite: [4, 4], category: "Premium" },
-  { kind: "foie-gras", label: "Burrata", hint: "Fondant", size: 105, sprite: [6, 2], category: "Premium" },
-  { kind: "gold-leaf", label: "Feuille d'or", hint: "Touche royale", size: 70, sprite: [4, 5], category: "Premium" },
+  { kind: "caviar", label: "Caviar", hint: "Luxe iodé", size: 75, img: caviarImg, category: "Premium" },
+  { kind: "truffle", label: "Truffe noire", hint: "Râpée minute", size: 85, img: truffleImg, category: "Premium" },
+  { kind: "burrata", label: "Burrata", hint: "Fondante & crémeuse", size: 110, img: burrataImg, category: "Premium" },
+  { kind: "gold", label: "Feuille d'or", hint: "Touche royale", size: 80, img: goldImg, category: "Premium" },
 ];
 
 const CATEGORIES: Tool["category"][] = ["Protéines", "Féculents", "Légumes", "Sauces", "Finitions", "Fruits", "Premium"];
-const SPRITE_COLS = 7;
-const SPRITE_ROWS = 7;
-
-function foodSpriteStyle(tool: Tool): CSSProperties {
-  const [row, col] = tool.sprite;
-  return {
-    backgroundImage: `url(${foodSprite})`,
-    backgroundSize: `${SPRITE_COLS * 100}% ${SPRITE_ROWS * 100}%`,
-    backgroundPosition: `${(col / (SPRITE_COLS - 1)) * 100}% ${(row / (SPRITE_ROWS - 1)) * 100}%`,
-    backgroundRepeat: "no-repeat",
-  };
-}
 
 interface Placed {
   id: string;
@@ -285,10 +284,11 @@ export default function PlatingSimulator() {
                   transition={{ type: "spring", stiffness: 380, damping: 22 }}
                   title={`${tool.label} — molette pour redimensionner, double-clic pour retirer`}
                 >
-                  <span
-                    aria-label={tool.label}
-                    className="block w-full h-full pointer-events-none"
-                    style={foodSpriteStyle(tool)}
+                  <img
+                    src={tool.img}
+                    alt={tool.label}
+                    draggable={false}
+                    className="w-full h-full object-contain pointer-events-none"
                   />
                 </motion.div>
               );
@@ -382,7 +382,7 @@ export default function PlatingSimulator() {
                     border: "1.5px solid rgba(255,255,255,0.25)",
                   }}
                 >
-                  <span aria-hidden className="block w-10 h-10" style={foodSpriteStyle(t)} />
+                  <img src={t.img} alt={t.label} loading="lazy" className="w-9 h-9 object-contain" />
                 </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold truncate">{t.label}</span>
