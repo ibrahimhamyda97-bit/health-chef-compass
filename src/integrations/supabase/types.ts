@@ -240,6 +240,39 @@ export type Database = {
         }
         Relationships: []
       }
+      live_sessions: {
+        Row: {
+          ended_at: string | null
+          host_name: string
+          host_user_id: string
+          id: string
+          is_active: boolean
+          started_at: string
+          title: string
+          viewer_count: number
+        }
+        Insert: {
+          ended_at?: string | null
+          host_name: string
+          host_user_id: string
+          id?: string
+          is_active?: boolean
+          started_at?: string
+          title: string
+          viewer_count?: number
+        }
+        Update: {
+          ended_at?: string | null
+          host_name?: string
+          host_user_id?: string
+          id?: string
+          is_active?: boolean
+          started_at?: string
+          title?: string
+          viewer_count?: number
+        }
+        Relationships: []
+      }
       monetization_settings: {
         Row: {
           feature_key: string | null
