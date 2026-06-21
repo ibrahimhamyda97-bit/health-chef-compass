@@ -1,6 +1,7 @@
-import { LayoutDashboard, Refrigerator, ChefHat, Target, Heart, ShoppingCart, CalendarDays, ShieldCheck, Palette, BookOpen, CakeSlice, Search, ScanLine } from "lucide-react";
+import { LayoutDashboard, Refrigerator, ChefHat, Target, Heart, ShoppingCart, CalendarDays, ShieldCheck, Palette, BookOpen, CakeSlice, Search, ScanLine, Radio } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
+import { LiveBadge } from "@/components/LiveBadge";
 import {
   Sidebar,
   SidebarContent,
@@ -25,6 +26,7 @@ const mainItems = [
 ];
 
 const advancedItems = [
+  { title: "Live Vidéo", url: "/live", icon: Radio },
   { title: "Scan Santé", url: "/scan-sante", icon: ScanLine },
   { title: "Objectif Santé", url: "/objectifs", icon: Target },
   { title: "Favoris", url: "/favoris", icon: Heart },
@@ -74,8 +76,11 @@ export function AppSidebar() {
             <div className="w-9 h-9 rounded-xl gradient-emerald flex items-center justify-center shadow-md">
               <ChefHat className="w-5 h-5 text-accent-foreground" />
             </div>
-            <div>
-              <span className="font-display font-bold text-base text-sidebar-accent-foreground leading-tight">Tableau de Board</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-display font-bold text-base text-sidebar-accent-foreground leading-tight">Tableau de Board</span>
+                <LiveBadge compact />
+              </div>
               <p className="text-[10px] text-sidebar-foreground/50 leading-tight">Menu intelligent</p>
             </div>
           </div>

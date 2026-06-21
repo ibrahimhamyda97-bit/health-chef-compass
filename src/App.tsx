@@ -16,6 +16,7 @@ import ShoppingList from "@/pages/ShoppingList";
 import Planning from "@/pages/Planning";
 import Admin from "@/pages/Admin";
 import PlatingArt from "@/pages/PlatingArt";
+import Live from "@/pages/Live";
 import HealthScan from "@/pages/HealthScan";
 import PastryCourses from "@/pages/PastryCourses";
 import Auth from "@/pages/Auth";
@@ -43,6 +44,7 @@ const App = () => (
                 <Route path="/favoris" element={<Favorites />} />
                 <Route path="/planning" element={<Planning />} />
                 <Route path="/dressage" element={<PlatingArt />} />
+                <Route path="/live" element={<Live />} />
                 <Route path="/scan-sante" element={<HealthScan />} />
                 <Route path="/cours-patisserie" element={<PastryCourses />} />
                 <Route path="/admin" element={<Admin />} />
