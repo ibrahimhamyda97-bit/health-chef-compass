@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import MediaUploadButton from "@/components/admin/MediaUploadButton";
 
 // ── Recipe helpers ──
 function loadRecipes(): Recipe[] {
@@ -490,11 +491,17 @@ export default function Admin() {
                     </div>
                   ))}
                 </div>
-                <div className="flex gap-2">
-                  <Input value={newPhotoUrl} onChange={(e) => setNewPhotoUrl(e.target.value)} placeholder="URL de la photo" className="rounded-lg bg-secondary border-0 flex-1" />
+                <div className="flex gap-2 flex-wrap">
+                  <Input value={newPhotoUrl} onChange={(e) => setNewPhotoUrl(e.target.value)} placeholder="URL de la photo (ou upload)" className="rounded-lg bg-secondary border-0 flex-1 min-w-[200px]" />
                   <Button size="sm" variant="outline" onClick={() => { if (newPhotoUrl.trim()) { setCoursePhotos([...coursePhotos, newPhotoUrl.trim()]); setNewPhotoUrl(""); } }}>
                     <Plus className="w-3 h-3" />
                   </Button>
+                  <MediaUploadButton
+                    accept="image/*"
+                    label="Uploader photo"
+                    maxMb={15}
+                    onUploaded={(url) => setCoursePhotos((prev) => [...prev, url])}
+                  />
                 </div>
               </div>
 
@@ -510,11 +517,17 @@ export default function Admin() {
                     </div>
                   ))}
                 </div>
-                <div className="flex gap-2">
-                  <Input value={newVideoUrl} onChange={(e) => setNewVideoUrl(e.target.value)} placeholder="URL de la vidéo" className="rounded-lg bg-secondary border-0 flex-1" />
+                <div className="flex gap-2 flex-wrap">
+                  <Input value={newVideoUrl} onChange={(e) => setNewVideoUrl(e.target.value)} placeholder="URL de la vidéo (ou upload)" className="rounded-lg bg-secondary border-0 flex-1 min-w-[200px]" />
                   <Button size="sm" variant="outline" onClick={() => { if (newVideoUrl.trim()) { setCourseVideos([...courseVideos, newVideoUrl.trim()]); setNewVideoUrl(""); } }}>
                     <Plus className="w-3 h-3" />
                   </Button>
+                  <MediaUploadButton
+                    accept="video/*"
+                    label="Uploader vidéo"
+                    maxMb={200}
+                    onUploaded={(url) => setCourseVideos((prev) => [...prev, url])}
+                  />
                 </div>
               </div>
 
