@@ -20,6 +20,7 @@ import Live from "@/pages/Live";
 import HealthScan from "@/pages/HealthScan";
 import PastryCourses from "@/pages/PastryCourses";
 import Auth from "@/pages/Auth";
+import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
