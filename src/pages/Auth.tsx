@@ -7,7 +7,9 @@ import { ChefHat, Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react
 import { useToast } from "@/hooks/use-toast";
 
 export default function Auth() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
+  const isLogin = mode === "login";
+  const isForgot = mode === "forgot";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
