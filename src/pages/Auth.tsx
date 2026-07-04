@@ -183,14 +183,22 @@ export default function Auth() {
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          {isLogin ? "Pas encore de compte ?" : "Déjà un compte ?"}{" "}
-          <button
-            type="button"
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-primary font-medium hover:underline"
-          >
-            {isLogin ? "S'inscrire" : "Se connecter"}
-          </button>
+          {isForgot ? (
+            <button type="button" onClick={() => setMode("login")} className="text-primary font-medium hover:underline">
+              Retour à la connexion
+            </button>
+          ) : (
+            <>
+              {isLogin ? "Pas encore de compte ?" : "Déjà un compte ?"}{" "}
+              <button
+                type="button"
+                onClick={() => setMode(isLogin ? "signup" : "login")}
+                className="text-primary font-medium hover:underline"
+              >
+                {isLogin ? "S'inscrire" : "Se connecter"}
+              </button>
+            </>
+          )}
         </p>
       </div>
     </div>
