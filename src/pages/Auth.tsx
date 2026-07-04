@@ -80,7 +80,7 @@ export default function Auth() {
           </div>
           <h1 className="text-3xl font-display font-bold text-foreground">Tableau de Board</h1>
           <p className="text-muted-foreground">
-            {isLogin ? "Connectez-vous à votre compte" : "Créez votre compte"}
+            {isForgot ? "Réinitialisez votre mot de passe" : isLogin ? "Connectez-vous à votre compte" : "Créez votre compte"}
           </p>
         </div>
 
