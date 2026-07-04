@@ -372,6 +372,80 @@ export type Database = {
         }
         Relationships: []
       }
+      recipe_comments: {
+        Row: {
+          content: string
+          created_at: string
+          display_name: string | null
+          id: string
+          photo_url: string | null
+          recipe_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          photo_url?: string | null
+          recipe_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          photo_url?: string | null
+          recipe_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_comments_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "user_recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_recipes: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          image_url: string | null
+          ingredients: string[]
+          steps: string[]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          image_url?: string | null
+          ingredients?: string[]
+          steps?: string[]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          image_url?: string | null
+          ingredients?: string[]
+          steps?: string[]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
