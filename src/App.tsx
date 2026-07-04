@@ -20,6 +20,7 @@ import Live from "@/pages/Live";
 import HealthScan from "@/pages/HealthScan";
 import PastryCourses from "@/pages/PastryCourses";
 import Auth from "@/pages/Auth";
+import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route element={<DashboardLayout />}>
                 <Route path="/" element={<Overview />} />
                 <Route path="/frigo" element={<MyFridge />} />
