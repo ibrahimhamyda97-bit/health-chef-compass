@@ -148,7 +148,7 @@ export default function Auth() {
             disabled={loading}
             className="w-full rounded-xl gradient-cobalt text-primary-foreground font-semibold h-11"
           >
-            {loading ? "Chargement..." : isLogin ? "Se connecter" : "Créer mon compte"}
+            {loading ? "Chargement..." : isForgot ? "Envoyer le lien" : isLogin ? "Se connecter" : "Créer mon compte"}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
 
